@@ -149,7 +149,7 @@ struct Cmd
     struct
     {
       struct VarType *t;
-      struct Expr *expr;
+      char *var_name;
     } VARDECLARE;
   } d;
 };

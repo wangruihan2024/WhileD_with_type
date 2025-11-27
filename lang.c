@@ -139,10 +139,10 @@ struct Cmd *TWhile(struct expr_bool *inv,
   return res;
 }
 
-struct Cmd *TVarDeclare(struct VarType *t, struct Expr *expr)
+struct Cmd *TVarDeclare(struct VarType *t, char *var_name)
 {
   struct Cmd *res = new_Cmd_ptr();
   res->t = T_VARDECLARE;
   res->d.VARDECLARE.t = t; // 声明的变量的类型
-  res->d.VARDECLARE.expr = expr;
+  res->d.VARDECLARE.var_name = var_name;
 }
