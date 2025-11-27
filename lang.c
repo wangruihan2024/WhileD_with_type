@@ -3,6 +3,24 @@
 #include <string.h>
 #include "lang.h"
 
+struct VarType *new_VarType_BASIC(enum BasicVarType t)
+{
+  struct VarType *res =
+      (struct VarType *)malloc(sizeof(struct VarType));
+  res->tag = T_BASIC;
+  res->tbasic = t;
+  return res;
+}
+
+struct VarType *new_VarType_PTR(struct VarType *t)
+{
+  struct VarType *res =
+      (struct VarType *)malloc(sizeof(struct VarType));
+  res->tag = T_PTR;
+  res->tptr.pointt = t;
+  return res;
+}
+
 struct Expr *new_Expr_ptr()
 {
   struct Expr *res =

@@ -43,6 +43,9 @@
         "unordered_map": "cpp",
         "variant": "cpp",
         "vector": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "bitset": "cpp",
+        "deque": "cpp",
+        "iostream": "cpp"
     }
 }

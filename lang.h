@@ -13,15 +13,22 @@ enum BasicVarType
   T_BOOL
 };
 
+enum TypeDenoted
+{
+  T_BASIC,
+  T_PTR
+};
+
 struct VarType
 {
+  enum TypeDenoted tag;
   union
   {
-    enum BasicVarType tag;
+    enum BasicVarType tbasic;
     struct
     {
       struct VarType *pointt; // 指向的类型
-    } t;
+    } tptr;
   };
 };
 
@@ -172,5 +179,10 @@ struct Cmd *TSeq(struct Cmd *, struct Cmd *);
 struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
 struct Cmd *TWhile(struct Expr *, struct Cmd *);
 struct Cmd *TVarDeclare(struct VarType *, struct Expr *);
+
+struct VarType *new_VarType_BASIC(enum BasicVarType);
+struct VarType *new_VarType_PTR(struct VarType *);
+struct Expr *new_Expr_ptr();
+struct Cmd *new_Cmd_ptr();
 
 #endif // LANG_H_INCLUDED
