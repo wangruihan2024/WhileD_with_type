@@ -17,7 +17,7 @@ struct VarType
 {
   union
   {
-    enum BasicVarType t;
+    enum BasicVarType tag;
     struct
     {
       struct VarType *pointt; // 指向的类型
