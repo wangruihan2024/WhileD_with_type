@@ -124,6 +124,13 @@ struct Cmd *TAsgnDref(struct Expr *left, struct Expr *right) // 解引用赋值�
   return res;
 }
 
+struct Cmd *TSkip()
+{
+  struct Cmd *res = new_Cmd_ptr();
+  res->t = T_SKIP;
+  return res;
+}
+
 struct Cmd *TSeq(struct Cmd *left, struct Cmd *right)
 {
   struct Cmd *res = new_Cmd_ptr();
@@ -162,4 +169,170 @@ struct Cmd *TVarDeclare(struct VarType *t, char *var_name)
   res->d.VARDECLARE.t = t; // 声明的变量的类型
   res->d.VARDECLARE.var_name = var_name;
   return res;
+}
+
+unsigned int build_nat(const char *c, int len) {
+  int s = 0, i = 0;
+  for (i = 0; i < len; ++i) {
+    if (s > 429496729) {
+      printf("We cannot handle natural numbers greater than 4294967295.\n");
+      exit(0);
+    }
+    if (s == 429496729 && c[i] > '5') {
+      printf("We cannot handle natural numbers greater than 4294967295.\n");
+      exit(0);
+    }
+    s = s * 10 + (c[i] - '0');
+  }
+  return s;
+}
+
+char *new_str(const char *str, int len) {
+  char *res = (char *)malloc(sizeof(char) * (len + 1));
+  if (res == NULL) {
+    printf("Failure in malloc.\n");
+    exit(0);
+  }
+  memcpy(res, str, len);
+  res[len] = '\0';
+  return res;
+}
+
+void print_binop(enum BinOpType op) {
+  switch (op) {
+  case T_PLUS:
+    printf("PLUS");
+    break;
+  case T_MINUS:
+    printf("MINUS");
+    break;
+  case T_MUL:
+    printf("MUL");
+    break;
+  case T_LT:
+    printf("LT");
+    break;
+  case T_GT:
+    printf("GT");
+    break;
+  case T_LE:
+    printf("LE");
+    break;
+  case T_GE:
+    printf("GE");
+    break;
+  case T_EQ:
+    printf("EQ");
+    break;
+  case T_NE:
+    printf("NE");
+    break;
+  case T_AND:
+    printf("AND");
+    break;
+  case T_OR:
+    printf("OR");
+    break;
+  }
+}
+
+void print_unop(enum UnOpType op) {
+  switch (op) {
+  case T_NOT:
+    printf("NOT");
+    break;
+  case T_NEG:
+    printf("NEG");
+    break;
+  }
+}
+
+
+void print_expr(struct Expr * e) {
+  switch (e -> t) {
+  case T_CONST:
+    printf("CONST(%d)", e -> d.CONST.value);
+    break;
+  case T_VAR:
+    printf("VAR(%s)", e -> d.VAR.name);
+    break;
+  case T_BINOP:
+    print_binop(e -> d.BINOP.op);
+    printf("(");
+    print_expr(e -> d.BINOP.left);
+    printf(",");
+    print_expr(e -> d.BINOP.right);
+    printf(")");
+    break;
+  case T_UNOP:
+    print_unop(e -> d.UNOP.op);
+    printf("(");
+    print_expr(e -> d.UNOP.right);
+    printf(")");
+    break;
+  case T_DEREF:
+    printf("DEREF(");
+    print_expr(e -> d.DEREF.right);
+    printf(")");
+    break;
+  case T_ADDROF:
+    printf("ADDROF(");
+    print_expr(e -> d.ADDROF.right);
+    printf(")");
+    break;
+  case T_TYPECONV:
+    printf("TYPECONV(");
+    // print_type(e -> d.TYPECONV.t); // 如果有打印类型的函数
+    print_expr(e -> d.TYPECONV.right);
+    printf(")");
+    break;
+  }
+}
+
+void print_cmd(struct Cmd * c) {
+  switch (c -> t) {
+  case T_ASGN:
+    printf("ASGN(");
+    printf("%s", c -> d.ASGN.left);
+    printf(",");
+    print_expr(c -> d.ASGN.right);
+    printf(")");
+    break;
+  case T_ASGNDREF:
+    printf("ASGNDREF(");
+    print_expr(c -> d.ASGNDREF.left);
+    printf(",");
+    print_expr(c -> d.ASGNDREF.right);
+    printf(")");
+    break;
+  case T_SKIP:
+    printf("SKIP");
+    break;
+  case T_VARDECLARE:
+    printf("VARDECLARE(%s)", c -> d.VARDECLARE.var_name);
+    break;
+  case T_SEQ:
+    printf("SEQ(");
+    print_cmd(c -> d.SEQ.left);
+    printf(",");
+    print_cmd(c -> d.SEQ.right);
+    printf(")");
+    break;
+  case T_IF:
+    printf("IF(");
+    print_expr(c -> d.IF.cond);
+    printf(",");
+    print_cmd(c -> d.IF.left);
+    printf(",");
+    print_cmd(c -> d.IF.right);
+    printf(")");
+    break;
+  case T_WHILE:
+    printf("WHILE(");
+    print_expr(c -> d.WHILE.cond);
+    printf(",");
+    print_cmd(c -> d.WHILE.body);
+    printf(")");
+    break;
+  }
 }

@@ -184,4 +184,11 @@ struct VarType *new_VarType_PTR(struct VarType *);
 struct Expr *new_Expr_ptr();
 struct Cmd *new_Cmd_ptr();
 
+void print_binop(enum BinOpType op);
+void print_unop(enum UnOpType op);
+void print_cmd(struct Cmd * c);
+unsigned int build_nat(const char *text, int len);
+char *new_str(const char *text, int len);
+void print_expr(struct Expr * e);
+
 #endif // LANG_H_INCLUDED
