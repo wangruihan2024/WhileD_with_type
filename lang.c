@@ -133,7 +133,7 @@ struct Cmd *TSeq(struct Cmd *left, struct Cmd *right)
   return res;
 }
 
-struct Cmd *TIf(struct expr_bool *cond,
+struct Cmd *TIf(struct Expr *cond,
                 struct Cmd *left,
                 struct Cmd *right)
 {
@@ -145,13 +145,11 @@ struct Cmd *TIf(struct expr_bool *cond,
   return res;
 }
 
-struct Cmd *TWhile(struct expr_bool *inv,
-                   struct expr_bool *cond,
+struct Cmd *TWhile(struct Expr *cond,
                    struct Cmd *body)
 {
   struct Cmd *res = new_Cmd_ptr();
   res->t = T_WHILE;
-  res->d.WHILE.inv = inv;
   res->d.WHILE.cond = cond;
   res->d.WHILE.body = body;
   return res;
@@ -163,4 +161,5 @@ struct Cmd *TVarDeclare(struct VarType *t, char *var_name)
   res->t = T_VARDECLARE;
   res->d.VARDECLARE.t = t; // 声明的变量的类型
   res->d.VARDECLARE.var_name = var_name;
+  return res;
 }

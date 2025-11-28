@@ -149,7 +149,6 @@ struct Cmd
     } IF;
     struct
     {
-      struct Expr *inv;
       struct Expr *cond;
       struct Cmd *body;
     } WHILE;
@@ -178,7 +177,7 @@ struct Cmd *TSkip();
 struct Cmd *TSeq(struct Cmd *, struct Cmd *);
 struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
 struct Cmd *TWhile(struct Expr *, struct Cmd *);
-struct Cmd *TVarDeclare(struct VarType *, struct Expr *);
+struct Cmd *TVarDeclare(struct VarType *, char *);
 
 struct VarType *new_VarType_BASIC(enum BasicVarType);
 struct VarType *new_VarType_PTR(struct VarType *);
