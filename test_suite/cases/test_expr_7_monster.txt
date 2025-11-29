@@ -1,0 +1,5 @@
+int a; int b; int c;
+bool d;
+bool res;
+a = 10; b = 2; c = 50; d = 0;
+res = (a * - - b + c / 2 >= 40) && !d

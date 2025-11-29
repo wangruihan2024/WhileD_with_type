@@ -37,6 +37,8 @@ enum BinOpType
   T_PLUS,
   T_MINUS,
   T_MUL,
+  T_DIV,
+  T_MOD,
 
   T_AND,
   T_OR,
@@ -161,7 +163,7 @@ struct Cmd
 };
 
 // 这里在声明构造函数呀，笑死了刚才写注释用的 (* ? *)
-struct Expr *TConst(unsigned int);
+struct Expr *TConst(unsigned long long);
 struct Expr *TVar(char *);
 struct Expr *TBinOp(enum BinOpType,
                     struct Expr *,
@@ -186,9 +188,10 @@ struct Cmd *new_Cmd_ptr();
 
 void print_binop(enum BinOpType op);
 void print_unop(enum UnOpType op);
-void print_cmd(struct Cmd * c);
-unsigned int build_nat(const char *text, int len);
-char *new_str(const char *text, int len);
 void print_expr(struct Expr * e);
+void print_cmd(struct Cmd * c);
+
+unsigned long long build_nat(const char *text, int len);
+char *new_str(const char *text, int len);
 
 #endif // LANG_H_INCLUDED

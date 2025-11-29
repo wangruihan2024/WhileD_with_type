@@ -11,4 +11,5 @@ int main(int argc, char **argv) {
     yyparse();
     fclose(stdin);
     print_cmd(root);
+    printf("\n");
 }

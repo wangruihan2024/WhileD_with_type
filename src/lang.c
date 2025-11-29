@@ -44,7 +44,7 @@ struct Cmd *new_Cmd_ptr()
   return res;
 }
 
-struct Expr *TConst(unsigned int value)
+struct Expr *TConst(unsigned long long value)
 {
   struct Expr *res = new_Expr_ptr();
   res->t = T_CONST;
@@ -171,17 +171,24 @@ struct Cmd *TVarDeclare(struct VarType *t, char *var_name)
   return res;
 }
 
-unsigned int build_nat(const char *c, int len) {
-  int s = 0, i = 0;
+unsigned long long build_nat(const char *c, int len) {
+  unsigned long long s = 0;
+  int i = 0;
+  // 2^63 = 9223372036854775808
+  // 阈值 = 922337203685477580
+  unsigned long long limit = 922337203685477580ULL;
+
   for (i = 0; i < len; ++i) {
-    if (s > 429496729) {
-      printf("We cannot handle natural numbers greater than 4294967295.\n");
+    if (s > limit) {
+      printf("[ERROR] We cannot handle natural numbers greater than 2^{63}.\n");
       exit(0);
     }
-    if (s == 429496729 && c[i] > '5') {
-      printf("We cannot handle natural numbers greater than 4294967295.\n");
+    
+    if (s == limit && c[i] > '8') {
+      printf("[ERROR] We cannot handle natural numbers greater than 2^{63}.\n");
       exit(0);
     }
+    
     s = s * 10 + (c[i] - '0');
   }
   return s;
@@ -201,13 +208,19 @@ char *new_str(const char *str, int len) {
 void print_binop(enum BinOpType op) {
   switch (op) {
   case T_PLUS:
-    printf("PLUS");
+    printf("ADD");
     break;
   case T_MINUS:
-    printf("MINUS");
+    printf("SUB");
     break;
   case T_MUL:
     printf("MUL");
+    break;
+  case T_DIV:
+    printf("DIV");
+    break;
+  case T_MOD:
+    printf("MOD");
     break;
   case T_LT:
     printf("LT");
@@ -247,6 +260,21 @@ void print_unop(enum UnOpType op) {
   }
 }
 
+void print_type(struct VarType *t) {
+  if (!t) return;
+  if (t->tag == T_BASIC) {
+    switch (t->tbasic) {
+      case T_INT: printf("INT"); break;
+      case T_SHORT: printf("SHORT"); break;
+      case T_LONG: printf("LONG"); break;
+      case T_BOOL: printf("BOOL"); break;
+      case T_LONGLONG: printf("LONGLONG"); break;
+    }
+  } else if (t->tag == T_PTR) {
+    print_type(t->tptr.pointt);
+    printf("*");
+  }
+}
 
 void print_expr(struct Expr * e) {
   switch (e -> t) {
@@ -282,7 +310,8 @@ void print_expr(struct Expr * e) {
     break;
   case T_TYPECONV:
     printf("TYPECONV(");
-    // print_type(e -> d.TYPECONV.t); // 如果有打印类型的函数
+    print_type(e -> d.TYPECONV.t);
+    printf(",");
     print_expr(e -> d.TYPECONV.right);
     printf(")");
     break;

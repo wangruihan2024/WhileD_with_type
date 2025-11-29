@@ -1,0 +1,6 @@
+int x; int y;
+bool b1; bool b2; bool b3;
+x = 10; y = 10;
+b1 = x > y;
+b2 = x >= y;
+b3 = x == y

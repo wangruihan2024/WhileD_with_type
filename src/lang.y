@@ -25,7 +25,7 @@ void * none;
 %token <none> TM_SEMICOL
 %token <none> TM_MALLOC TM_RI TM_RC TM_WI TM_WC
 %token <none> TM_VAR TM_IF TM_THEN TM_ELSE TM_WHILE TM_DO TM_SKIP
-%token <none> TM_INT TM_SHORT TM_LONG TM_BOOL
+%token <none> TM_INT TM_SHORT TM_LONG TM_LONGLONG TM_BOOL
 %token <none> TM_ASGNOP
 %token <none> TM_OR
 %token <none> TM_AND
@@ -48,8 +48,7 @@ void * none;
 %left TM_LT TM_LE TM_GT TM_GE TM_EQ TM_NE
 %left TM_PLUS TM_MINUS
 %left TM_MUL TM_DIV TM_MOD
-%left TM_NOT TM_BAND
-%left TM_LEFT_PAREN TM_RIGHT_PAREN
+%left TM_NOT TM_BAND UMINUS  // 设置一个虚拟的 token UMINUS
 %right TM_SEMICOL
 
 %%
@@ -110,6 +109,10 @@ NT_TYPE:
   {
     $$ = new_VarType_BASIC(T_BOOL);
   }
+| TM_LONGLONG
+  {
+    $$ = new_VarType_BASIC(T_LONGLONG);
+  }
 | NT_TYPE TM_MUL
   {
     $$ = new_VarType_PTR($1);
@@ -133,7 +136,7 @@ NT_EXPR:
   {
     $$ = TUnOP(T_NOT, $2);
   }
-| TM_MINUS NT_EXPR
+| TM_MINUS NT_EXPR %prec UMINUS
   {
     $$ = TUnOP(T_NEG, $2);
   }
@@ -160,6 +163,14 @@ NT_EXPR:
 | NT_EXPR TM_MUL NT_EXPR
   {
     $$ = TBinOp(T_MUL, $1, $3);
+  }
+| NT_EXPR TM_DIV NT_EXPR
+  {
+    $$ = TBinOp(T_DIV, $1, $3);
+  }
+| NT_EXPR TM_MOD NT_EXPR
+  {
+    $$ = TBinOp(T_MOD, $1, $3);
   }
 | NT_EXPR TM_AND NT_EXPR
   {

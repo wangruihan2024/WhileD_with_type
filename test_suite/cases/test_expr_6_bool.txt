@@ -1,0 +1,3 @@
+bool t; bool f; bool res;
+t = 1; f = 0;
+res = !f && (t || f)
