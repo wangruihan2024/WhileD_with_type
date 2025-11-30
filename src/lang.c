@@ -106,6 +106,28 @@ struct Expr *TTypeConv(struct VarType *t, struct Expr *right)
   return res;
 }
 
+struct Expr *TMalloc(struct Expr *right)
+{
+  struct Expr *res = new_Expr_ptr();
+  res->t = T_MALLOC;
+  res->d.MALLOC.size = right;
+  return res;
+}
+
+struct Expr *TReadInt()
+{
+  struct Expr *res = new_Expr_ptr();
+  res->t = T_RI;
+  return res;
+}
+
+struct Expr *TReadChar()
+{
+  struct Expr *res = new_Expr_ptr();
+  res->t = T_RC;
+  return res;
+}
+
 struct Cmd *TAsgn(char *left, struct Expr *right)
 {
   struct Cmd *res = new_Cmd_ptr();
@@ -168,6 +190,22 @@ struct Cmd *TVarDeclare(struct VarType *t, char *var_name)
   res->t = T_VARDECLARE;
   res->d.VARDECLARE.t = t; // 声明的变量的类型
   res->d.VARDECLARE.var_name = var_name;
+  return res;
+}
+
+struct Cmd *TWriteInt(struct Expr *e)
+{
+  struct Cmd *res = new_Cmd_ptr();
+  res->t = T_WI;
+  res->d.WI.right = e;
+  return res;
+}
+
+struct Cmd *TWriteChar(struct Expr *e)
+{
+  struct Cmd *res = new_Cmd_ptr();
+  res->t = T_WC;
+  res->d.WC.right = e;
   return res;
 }
 
@@ -279,7 +317,7 @@ void print_type(struct VarType *t) {
 void print_expr(struct Expr * e) {
   switch (e -> t) {
   case T_CONST:
-    printf("CONST(%d)", e -> d.CONST.value);
+    printf("CONST(%llu)", e -> d.CONST.value);
     break;
   case T_VAR:
     printf("VAR(%s)", e -> d.VAR.name);
@@ -313,6 +351,17 @@ void print_expr(struct Expr * e) {
     print_type(e -> d.TYPECONV.t);
     printf(",");
     print_expr(e -> d.TYPECONV.right);
+    printf(")");
+    break;
+  case T_RI:
+    printf("READ_INT()");
+    break;
+  case T_RC:
+    printf("READ_CHAR()");
+    break;
+  case T_MALLOC:
+    printf("MALLOC(");
+    print_expr(e -> d.MALLOC.size);
     printf(")");
     break;
   }
@@ -361,6 +410,16 @@ void print_cmd(struct Cmd * c) {
     print_expr(c -> d.WHILE.cond);
     printf(",");
     print_cmd(c -> d.WHILE.body);
+    printf(")");
+    break;
+  case T_WI:
+    printf("WRITE_INT(");
+    print_expr(c -> d.WI.right);
+    printf(")");
+    break;
+  case T_WC:
+    printf("WRITE_CHAR(");
+    print_expr(c -> d.WC.right);
     printf(")");
     break;
   }

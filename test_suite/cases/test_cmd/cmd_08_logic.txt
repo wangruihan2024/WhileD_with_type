@@ -1,0 +1,2 @@
+bool a; bool b; int c; int d;
+if (!a && (b || c < d)) then { SKIP } else { c = 0 }

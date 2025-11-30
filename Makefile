@@ -31,8 +31,15 @@ PARSER_O = $(BUILD_DIR)/parser.o
 LEXER_O = $(BUILD_DIR)/lexer.o
 MAIN_O = $(BUILD_DIR)/main.o
 
+# 禁用所有隐式规则和隐式变量
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --no-builtin-variables
+
 # 防止 make 删除中间文件
 .SECONDARY: $(PARSER_C) $(PARSER_H) $(LEXER_C) $(LEXER_H)
+
+# 清空所有后缀规则
+.SUFFIXES:
 
 # 默认目标
 all: $(TARGET)

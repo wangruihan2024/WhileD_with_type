@@ -65,7 +65,10 @@ enum ExprType
   T_UNOP,
   T_DEREF,
   T_ADDROF,
-  T_TYPECONV
+  T_TYPECONV,
+  T_RI,
+  T_RC,
+  T_MALLOC
 };
 
 enum CmdType
@@ -76,7 +79,9 @@ enum CmdType
   T_SEQ,
   T_IF,
   T_WHILE,
-  T_VARDECLARE
+  T_VARDECLARE,
+  T_WI,
+  T_WC
 };
 
 struct Expr
@@ -86,7 +91,7 @@ struct Expr
   {
     struct
     {
-      unsigned int value;
+      unsigned long long value;
     } CONST;
     struct
     {
@@ -116,6 +121,18 @@ struct Expr
       struct VarType *t;
       struct Expr *right;
     } TYPECONV;
+    struct
+    {
+      void *__;
+    } RI;
+    struct
+    {
+      void *__;
+    } RC;
+    struct
+    {
+      struct Expr *size;
+    } MALLOC;
   } d;
 };
 
@@ -159,6 +176,14 @@ struct Cmd
       struct VarType *t;
       char *var_name;
     } VARDECLARE;
+    struct
+    {
+      struct Expr *right;
+    } WI;
+    struct
+    {
+      struct Expr *right;
+    } WC;
   } d;
 };
 
@@ -173,6 +198,10 @@ struct Expr *TDeref(struct Expr *);
 struct Expr *TAddrof(struct Expr *);
 struct Expr *TTypeConv(struct VarType *, struct Expr *);
 
+struct Expr *TReadInt();
+struct Expr *TReadChar();
+struct Expr *TMalloc(struct Expr *);
+
 struct Cmd *TAsgn(char *left, struct Expr *right);
 struct Cmd *TAsgnDref(struct Expr *left, struct Expr *right); // 解引用赋值的特殊情况
 struct Cmd *TSkip();
@@ -180,6 +209,9 @@ struct Cmd *TSeq(struct Cmd *, struct Cmd *);
 struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
 struct Cmd *TWhile(struct Expr *, struct Cmd *);
 struct Cmd *TVarDeclare(struct VarType *, char *);
+
+struct Cmd *TWriteInt(struct Expr *right);
+struct Cmd *TWriteChar(struct Expr *right);
 
 struct VarType *new_VarType_BASIC(enum BasicVarType);
 struct VarType *new_VarType_PTR(struct VarType *);

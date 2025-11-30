@@ -1,0 +1,7 @@
+int *p;
+int a;
+p = malloc(1);
+*p = 10;
+a = *p + 5;
+p = &a;
+write_int(*p)

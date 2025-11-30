@@ -1,0 +1,4 @@
+bool b; int i;
+b = 1;
+i = (int) b;
+write_char(read_char())

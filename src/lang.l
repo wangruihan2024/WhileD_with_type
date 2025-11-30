@@ -36,7 +36,7 @@
   return TM_BOOL;
 }
 
-"skip" {
+"SKIP" {
   return TM_SKIP;
 }
 

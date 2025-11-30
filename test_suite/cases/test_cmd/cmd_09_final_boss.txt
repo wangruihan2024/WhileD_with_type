@@ -1,0 +1,17 @@
+int a; int b; int *p;
+a = 0;
+p = malloc(1);
+while ((a < 10) && (read_int() > 0)) do {
+    if (a == 5) then {
+        *p = a;
+        write_int(*p + 1)
+    } else {
+        if (a > 8) then {
+            b = a * -2;
+            SKIP
+        } else {
+            b = 0
+        }
+    };
+    a = a + 1
+}
