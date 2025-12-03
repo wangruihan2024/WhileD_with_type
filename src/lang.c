@@ -15,7 +15,7 @@ struct VarType new_VarType_PTR(struct VarType t)
 {
   struct VarType res;
   res.tag = T_PTR;
-  res.tptr.pointt = t;
+  *res.tptr = t;
   return res;
 }
 
@@ -293,7 +293,7 @@ void print_type(struct VarType t)
   }
   else if (t.tag == T_PTR)
   {
-    print_type(t.tptr.pointt);
+    print_type(*t.tptr);
     printf("*");
   }
 }
@@ -405,7 +405,7 @@ int VarTypeCmp(struct VarType left, struct VarType right)
         return 0;
       break;
     case T_PTR: // 递归下去检查
-      return VarTypeCmp(left.tptr.pointt, right.tptr.pointt);
+      return VarTypeCmp(*left.tptr, *right.tptr);
       break;
     default:
       printf("[Error]: unkown tag");

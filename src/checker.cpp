@@ -1,17 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <iostream>
-#include <map>
 #include "lang.h"
-
-// checker 即类型检查器，基础是类型表（支持作用域）
-
-struct VarTypeEnv
-{
-    std::map<char *, VarType> vartypes;
-    struct VarTypeEnv *parent; // 父作用域，全局作用域则为空
-};
+#include "checker.h"
 
 VarType lookup_vartype(struct VarTypeEnv *env, char *name)
 {
@@ -23,7 +14,7 @@ VarType lookup_vartype(struct VarTypeEnv *env, char *name)
         case T_BASIC:
             return new_VarType_BASIC(it->second.tbasic);
         case T_PTR:
-            return new_VarType_PTR(it->second.tptr.pointt);
+            return new_VarType_PTR(*it->second.tptr);
         }
     }
     else
@@ -48,6 +39,8 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
     case T_PLUS:
     case T_MINUS:
     case T_MUL:
+    case T_DIV:
+    case T_MOD:
         if (VarTypeCmp(left, right))
         {
             switch (left.tag)
@@ -59,11 +52,8 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
                 exit(0);
             }
         }
-        else
-        {
-            std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
-            exit(0);
-        }
+        std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
+        exit(0);
     case T_AND:
     case T_OR:
         if (VarTypeCmp(left, right))
@@ -80,11 +70,8 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
                 exit(0);
             }
         }
-        else
-        {
-            std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
-            exit(0);
-        }
+        std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
+        exit(0);
     case T_LT:
     case T_GT:
     case T_LE:
@@ -102,11 +89,8 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
                 exit(0);
             }
         }
-        else
-        {
-            std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
-            exit(0);
-        }
+        std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
+        exit(0);
     }
 }
 VarType check_unop(struct Expr *e, struct VarTypeEnv *env)
@@ -165,20 +149,27 @@ VarType checkexpr(struct Expr *e, struct VarTypeEnv *env)
         switch (t.tag) // 根据tag来跟踪union中到底是谁有效
         {
         case T_PTR:
-            return t.tptr.pointt; // 交出指针包裹的类型
+            return *t.tptr; // 交出指针包裹的类型
         case T_BASIC:
             std::cerr << "cannot dereference non-pointer" << std::endl;
             exit(0);
         }
     }
     case T_ADDROF:
+    {
         VarType t = checkexpr(e->d.ADDROF.right, env);
-        // TODO：添加检查，只有左值表达式能够允许取地址
-        return new_VarType_PTR(t);
+        switch (e->d.ADDROF.right->t) // 表达式，
+        {
+        case T_VAR:
+        case T_DEREF:
+            return new_VarType_PTR(t);
+        default:
+            std::cerr << "[Error]: 取地址需要左值表达式" << std::endl;
+            exit(0);
+        }
+    }
     case T_TYPECONV:
-        VarType t = checkexpr(e->d.TYPECONV.right, env);
-        // TODO: CONVERSION Rules
-        return e->d.TYPECONV.t; // conversion result type
+        return e->d.TYPECONV.t; // MARK: 无论如何直接转换
     }
 }
 
@@ -191,13 +182,17 @@ void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
     case T_SKIP:
         return; // 无事发生直接退出，出问题的选择是直接退出程序，“编译失败”
     case T_ASGN:
+    {
         VarType left_type = lookup_vartype(env, c->d.ASGN.left);
         VarType right_type = checkexpr(c->d.ASGN.right, env);
         if (VarTypeCmp(left_type, right_type))
             return; // 左右类型匹配，则OK
+        std::cerr << "" << std::endl;
         std::cerr << "[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）" << std ::endl;
         exit(0);
+    }
     case T_ASGNDREF:
+    {
         Expr deref;
         deref.t = T_DEREF;
         deref.d.DEREF.right = c->d.ASGNDREF.left;
@@ -207,6 +202,7 @@ void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
             return;
         std::cerr << "[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）" << std ::endl;
         exit(0);
+    }
     case T_SEQ:
         checkcmd(c->d.SEQ.left, env);
         checkcmd(c->d.SEQ.right, env);
@@ -232,7 +228,6 @@ void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
     }
     case T_VARDECLARE:
         // 声明变量，只需要记录即可
-        // 欸要注意SEQ的顺序🤔，否则可能会混乱TODO
         env->vartypes[c->d.VARDECLARE.var_name] = c->d.VARDECLARE.t;
         return;
     }
