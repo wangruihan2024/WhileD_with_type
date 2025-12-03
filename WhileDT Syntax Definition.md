@@ -1,7 +1,7 @@
 # WhileDT Syntax Definition
 
 ## Types
-- Basic types: `int`, `short`, `long`, `long long`, `bool`
+- Basic types: `int`, `short`, `long`, `long long`
 - Pointer types: `<type> *` (e.g., `int *`, `int **`)
 
 ## Expressions
@@ -21,10 +21,6 @@
   - `==`, `!=`
   - `&&`
   - `||`
-- **Memory Allocation**: `malloc( <expr> )`
-- **Input**:
-  - `read_int()`
-  - `read_char()`
 
 ## Commands
 
@@ -69,10 +65,6 @@ while ( <expression> ) do { <command> }
 ```
 Example: `while (x > 0) do { x = x - 1 }`
 
-### Output Commands
-- `write_int( <expression> )`
-- `write_char( <expression> )`
-
 ## Abstract Syntax Tree (AST) Format
 
 The interpreter outputs the AST in the following format:
@@ -85,9 +77,6 @@ The interpreter outputs the AST in the following format:
 - `DEREF(right)`
 - `ADDROF(right)`
 - `TYPECONV(type, right)`
-- `MALLOC(size)`
-- `READ_INT()`
-- `READ_CHAR()`
 
 ### Commands
 - `SKIP`
@@ -97,5 +86,3 @@ The interpreter outputs the AST in the following format:
 - `SEQ(cmd1, cmd2)`
 - `IF(cond, then_cmd, else_cmd)`
 - `WHILE(cond, body_cmd)`
-- `WRITE_INT(expr)`
-- `WRITE_CHAR(expr)`
