@@ -3,10 +3,11 @@
 #include "lexer.h"
 #include "parser.h"
 
-extern struct Cmd * root;
+extern struct Cmd *root;
 int yyparse();
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     yyin = stdin;
     yyparse();
     fclose(stdin);

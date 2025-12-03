@@ -27,7 +27,7 @@ struct VarType
     enum BasicVarType tbasic;
     struct
     {
-      struct VarType *pointt; // 指向的类型
+      struct VarType pointt; // 指向的类型
     } tptr;
   };
 };
@@ -113,7 +113,7 @@ struct Expr
     } ADDROF;
     struct
     {
-      struct VarType *t;
+      struct VarType t;
       struct Expr *right;
     } TYPECONV;
   } d;
@@ -156,7 +156,7 @@ struct Cmd
     } WHILE;
     struct
     {
-      struct VarType *t;
+      struct VarType t;
       char *var_name;
     } VARDECLARE;
   } d;
@@ -171,7 +171,7 @@ struct Expr *TBinOp(enum BinOpType,
 struct Expr *TUnOP(enum UnOpType, struct Expr *);
 struct Expr *TDeref(struct Expr *);
 struct Expr *TAddrof(struct Expr *);
-struct Expr *TTypeConv(struct VarType *, struct Expr *);
+struct Expr *TTypeConv(struct VarType, struct Expr *);
 
 struct Cmd *TAsgn(char *left, struct Expr *right);
 struct Cmd *TAsgnDref(struct Expr *left, struct Expr *right); // 解引用赋值的特殊情况
@@ -179,19 +179,21 @@ struct Cmd *TSkip();
 struct Cmd *TSeq(struct Cmd *, struct Cmd *);
 struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
 struct Cmd *TWhile(struct Expr *, struct Cmd *);
-struct Cmd *TVarDeclare(struct VarType *, char *);
+struct Cmd *TVarDeclare(struct VarType, char *);
 
-struct VarType *new_VarType_BASIC(enum BasicVarType);
-struct VarType *new_VarType_PTR(struct VarType *);
+struct VarType new_VarType_BASIC(enum BasicVarType);
+struct VarType new_VarType_PTR(struct VarType);
 struct Expr *new_Expr_ptr();
 struct Cmd *new_Cmd_ptr();
 
 void print_binop(enum BinOpType op);
 void print_unop(enum UnOpType op);
-void print_expr(struct Expr * e);
-void print_cmd(struct Cmd * c);
+void print_expr(struct Expr *e);
+void print_cmd(struct Cmd *c);
 
 unsigned long long build_nat(const char *text, int len);
 char *new_str(const char *text, int len);
+
+int VarTypeCmp(struct VarType, struct VarType);
 
 #endif // LANG_H_INCLUDED
