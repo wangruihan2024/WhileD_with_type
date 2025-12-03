@@ -15,7 +15,6 @@ extern "C"
     T_SHORT,
     T_LONG,
     T_LONGLONG,
-    T_BOOL
   };
 
   enum TypeDenoted
@@ -68,9 +67,6 @@ enum ExprType
   T_DEREF,
   T_ADDROF,
   T_TYPECONV,
-  T_RI,
-  T_RC,
-  T_MALLOC
 };
 
 enum CmdType
@@ -82,60 +78,46 @@ enum CmdType
   T_IF,
   T_WHILE,
   T_VARDECLARE,
-  T_WI,
-  T_WC
 };
 
 struct Expr
 {
   enum ExprType t;
   union
-  {
-    struct
     {
-      unsigned long long value;
-    } CONST;
-    struct
-    {
-      char *name;
-    } VAR;
-    struct
-    {
-      enum BinOpType op;
-      struct Expr *left;
-      struct Expr *right;
-    } BINOP;
-    struct
-    {
-      enum UnOpType op;
-      struct Expr *right;
-    } UNOP;
-    struct
-    {
-      struct Expr *right;
-    } DEREF;
-    struct
-    {
-      struct Expr *right;
-    } ADDROF;
-    struct
-    {
-      struct VarType *t;
-      struct Expr *right;
-    } TYPECONV;
-    struct
-    {
-      void *__;
-    } RI;
-    struct
-    {
-      void *__;
-    } RC;
-    struct
-    {
-      struct Expr *size;
-    } MALLOC;
-  } d;
+      struct
+      {
+        unsigned long long value;
+      } CONST;
+      struct
+      {
+        char *name;
+      } VAR;
+      struct
+      {
+        enum BinOpType op;
+        struct Expr *left;
+        struct Expr *right;
+      } BINOP;
+      struct
+      {
+        enum UnOpType op;
+        struct Expr *right;
+      } UNOP;
+      struct
+      {
+        struct Expr *right;
+      } DEREF;
+      struct
+      {
+        struct Expr *right;
+      } ADDROF;
+      struct
+      {
+        struct VarType t;
+        struct Expr *right;
+      } TYPECONV;
+    } d;
 };
 
 struct Cmd
@@ -175,17 +157,9 @@ struct Cmd
     } WHILE;
     struct
     {
-      struct VarType *t;
+      struct VarType t;
       char *var_name;
     } VARDECLARE;
-    struct
-    {
-      struct Expr *right;
-    } WI;
-    struct
-    {
-      struct Expr *right;
-    } WC;
   } d;
 };
 
@@ -198,7 +172,7 @@ struct Expr *TBinOp(enum BinOpType,
 struct Expr *TUnOP(enum UnOpType, struct Expr *);
 struct Expr *TDeref(struct Expr *);
 struct Expr *TAddrof(struct Expr *);
-struct Expr *TTypeConv(struct VarType *, struct Expr *);
+struct Expr *TTypeConv(struct VarType , struct Expr *);
 
 struct Expr *TReadInt();
 struct Expr *TReadChar();
@@ -210,7 +184,7 @@ struct Cmd *TSkip();
 struct Cmd *TSeq(struct Cmd *, struct Cmd *);
 struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
 struct Cmd *TWhile(struct Expr *, struct Cmd *);
-struct Cmd *TVarDeclare(struct VarType *, char *);
+struct Cmd *TVarDeclare(struct VarType , char *);
 
 struct Cmd *TWriteInt(struct Expr *right);
 struct Cmd *TWriteChar(struct Expr *right);

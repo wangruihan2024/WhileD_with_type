@@ -61,8 +61,8 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
             switch (left.tag)
             {
             case T_BASIC:
-                if (left.tbasic == T_BOOL)
-                    return left;
+                // if (left.tbasic == T_BOOL)
+                //     return left;
                 std ::cerr << "[Error]: 整数类型不能与，非（没有隐式转换的版本）" << std::endl;
                 exit(0);
             case T_PTR:
@@ -83,7 +83,8 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
             switch (left.tag)
             {
             case T_BASIC:
-                return new_VarType_BASIC(T_BOOL);
+                // return new_VarType_BASIC(T_BOOL);
+                return new_VarType_BASIC(T_INT);
             case T_PTR:
                 std ::cerr << "[Error]: 指针类型不能比较" << std::endl;
                 exit(0);
@@ -106,19 +107,19 @@ VarType check_unop(struct Expr *e, struct VarTypeEnv *env)
         switch (e->d.UNOP.op)
         {
         case T_NEG:
-            if (expr_type.tbasic == T_BOOL)
-            {
-                std::cerr << "[Error]: 布尔类型不能取负数（无隐式类型转化）" << std::endl;
-                exit(0);
-            }
-            else
+            // if (expr_type.tbasic == T_BOOL)
+            // {
+            //     std::cerr << "[Error]: 布尔类型不能取负数（无隐式类型转化）" << std::endl;
+            //     exit(0);
+            // }
+            // else
                 return expr_type;
         case T_NOT:
-            if (expr_type.tbasic == T_BOOL)
+            if (expr_type.tbasic == T_INT)
                 return expr_type;
             else
             {
-                std::cerr << "[Error]: 整数类型不能取反？（无隐式类型转化）" << std::endl;
+                std::cerr << "[Error]: 不是INT套壳的Bool不能取反（无隐式类型转化）" << std::endl;
                 exit(0);
             }
         }

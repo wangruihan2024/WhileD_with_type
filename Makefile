@@ -63,6 +63,15 @@ $(BIN_DIR):
 # ==========================================
 $(PARSER_C): $(LANG_Y) | $(BUILD_DIR)
 	$(YACC) -o $(PARSER_C) -d -v $(LANG_Y)
+	@echo "Wrapping $(PARSER_H) with extern \"C\"..."
+	@echo '#ifdef __cplusplus' > $(PARSER_H).tmp
+	@echo 'extern "C" {' >> $(PARSER_H).tmp
+	@echo '#endif' >> $(PARSER_H).tmp
+	@cat $(PARSER_H) >> $(PARSER_H).tmp
+	@echo '#ifdef __cplusplus' >> $(PARSER_H).tmp
+	@echo '}' >> $(PARSER_H).tmp
+	@echo '#endif' >> $(PARSER_H).tmp
+	@mv $(PARSER_H).tmp $(PARSER_H)
 
 $(PARSER_H): $(PARSER_C)
 
@@ -73,6 +82,15 @@ $(LEXER_C): $(LANG_L) $(PARSER_H) | $(BUILD_DIR)
 	$(LEX) --header-file=lexer.h -o lexer.c $(LANG_L)
 	mv lexer.c $(LEXER_C)
 	mv lexer.h $(LEXER_H)
+	@echo "Wrapping $(LEXER_H) with extern \"C\"..."
+	@echo '#ifdef __cplusplus' > $(LEXER_H).tmp
+	@echo 'extern "C" {' >> $(LEXER_H).tmp
+	@echo '#endif' >> $(LEXER_H).tmp
+	@cat $(LEXER_H) >> $(LEXER_H).tmp
+	@echo '#ifdef __cplusplus' >> $(LEXER_H).tmp
+	@echo '}' >> $(LEXER_H).tmp
+	@echo '#endif' >> $(LEXER_H).tmp
+	@mv $(LEXER_H).tmp $(LEXER_H)
 
 $(LEXER_H): $(LEXER_C)
 

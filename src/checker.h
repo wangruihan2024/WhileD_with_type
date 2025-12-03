@@ -1,7 +1,8 @@
 #ifndef CHECKER_H_INCLUDED
 #define CHECKER_H_INCLUDED
-#include <string.h>
+#include <string>
 #include <map>
+#include <stdint.h>
 #include "lang.h"
 
 struct VarTypeEnv

@@ -15,6 +15,11 @@ struct VarType new_VarType_PTR(struct VarType t)
 {
   struct VarType res;
   res.tag = T_PTR;
+  res.tptr = (struct VarType *)malloc(sizeof(struct VarType));
+  if (res.tptr == NULL) {
+      printf("Failure in malloc.\n");
+      exit(0);
+  }
   *res.tptr = t;
   return res;
 }
@@ -104,28 +109,6 @@ struct Expr *TTypeConv(struct VarType t, struct Expr *right)
   return res;
 }
 
-struct Expr *TMalloc(struct Expr *right)
-{
-  struct Expr *res = new_Expr_ptr();
-  res->t = T_MALLOC;
-  res->d.MALLOC.size = right;
-  return res;
-}
-
-struct Expr *TReadInt()
-{
-  struct Expr *res = new_Expr_ptr();
-  res->t = T_RI;
-  return res;
-}
-
-struct Expr *TReadChar()
-{
-  struct Expr *res = new_Expr_ptr();
-  res->t = T_RC;
-  return res;
-}
-
 struct Cmd *TAsgn(char *left, struct Expr *right)
 {
   struct Cmd *res = new_Cmd_ptr();
@@ -191,54 +174,32 @@ struct Cmd *TVarDeclare(struct VarType t, char *var_name)
   return res;
 }
 
-struct Cmd *TWriteInt(struct Expr *e)
-{
-  struct Cmd *res = new_Cmd_ptr();
-  res->t = T_WI;
-  res->d.WI.right = e;
-  return res;
-}
-
-struct Cmd *TWriteChar(struct Expr *e)
-{
-  struct Cmd *res = new_Cmd_ptr();
-  res->t = T_WC;
-  res->d.WC.right = e;
-  return res;
-}
-
-unsigned long long build_nat(const char *c, int len)
-{
+unsigned long long build_nat(const char *c, int len) {
   unsigned long long s = 0;
   int i = 0;
   // 2^63 = 9223372036854775808
   // 阈值 = 922337203685477580
   unsigned long long limit = 922337203685477580ULL;
 
-  for (i = 0; i < len; ++i)
-  {
-    if (s > limit)
-    {
+  for (i = 0; i < len; ++i) {
+    if (s > limit) {
       printf("[ERROR] We cannot handle natural numbers greater than 2^{63}.\n");
       exit(0);
     }
-
-    if (s == limit && c[i] > '8')
-    {
+    
+    if (s == limit && c[i] > '8') {
       printf("[ERROR] We cannot handle natural numbers greater than 2^{63}.\n");
       exit(0);
     }
-
+    
     s = s * 10 + (c[i] - '0');
   }
   return s;
 }
 
-char *new_str(const char *str, int len)
-{
+char *new_str(const char *str, int len) {
   char *res = (char *)malloc(sizeof(char) * (len + 1));
-  if (res == NULL)
-  {
+  if (res == NULL) {
     printf("Failure in malloc.\n");
     exit(0);
   }
@@ -247,10 +208,8 @@ char *new_str(const char *str, int len)
   return res;
 }
 
-void print_binop(enum BinOpType op)
-{
-  switch (op)
-  {
+void print_binop(enum BinOpType op) {
+  switch (op) {
   case T_PLUS:
     printf("ADD");
     break;
@@ -293,10 +252,8 @@ void print_binop(enum BinOpType op)
   }
 }
 
-void print_unop(enum UnOpType op)
-{
-  switch (op)
-  {
+void print_unop(enum UnOpType op) {
+  switch (op) {
   case T_NOT:
     printf("NOT");
     break;
@@ -306,147 +263,106 @@ void print_unop(enum UnOpType op)
   }
 }
 
-void print_type(struct VarType t)
-{
-  if (t.tag == T_BASIC)
-  {
-    switch (t.tbasic)
-    {
-    case T_INT:
-      printf("INT");
-      break;
-    case T_SHORT:
-      printf("SHORT");
-      break;
-    case T_LONG:
-      printf("LONG");
-      break;
-    case T_BOOL:
-      printf("BOOL");
-      break;
-    case T_LONGLONG:
-      printf("LONGLONG");
-      break;
+void print_type(struct VarType *t) {
+  if (!t) return;
+  if (t->tag == T_BASIC) {
+    switch (t->tbasic) {
+      case T_INT: printf("INT"); break;
+      case T_SHORT: printf("SHORT"); break;
+      case T_LONG: printf("LONG"); break;
+      case T_LONGLONG: printf("LONGLONG"); break;
     }
-  }
-  else if (t.tag == T_PTR)
-  {
-    print_type(*t.tptr);
+  } else if (t->tag == T_PTR) {
+    print_type(t->tptr);
     printf("*");
   }
 }
 
-void print_expr(struct Expr *e)
-{
-  switch (e->t)
-  {
+void print_expr(struct Expr * e) {
+  switch (e -> t) {
   case T_CONST:
     printf("CONST(%llu)", e -> d.CONST.value);
-    printf("CONST(%d)", e->d.CONST.value);
     break;
   case T_VAR:
-    printf("VAR(%s)", e->d.VAR.name);
+    printf("VAR(%s)", e -> d.VAR.name);
     break;
   case T_BINOP:
-    print_binop(e->d.BINOP.op);
+    print_binop(e -> d.BINOP.op);
     printf("(");
-    print_expr(e->d.BINOP.left);
+    print_expr(e -> d.BINOP.left);
     printf(",");
-    print_expr(e->d.BINOP.right);
+    print_expr(e -> d.BINOP.right);
     printf(")");
     break;
   case T_UNOP:
-    print_unop(e->d.UNOP.op);
+    print_unop(e -> d.UNOP.op);
     printf("(");
-    print_expr(e->d.UNOP.right);
+    print_expr(e -> d.UNOP.right);
     printf(")");
     break;
   case T_DEREF:
     printf("DEREF(");
-    print_expr(e->d.DEREF.right);
+    print_expr(e -> d.DEREF.right);
     printf(")");
     break;
   case T_ADDROF:
     printf("ADDROF(");
-    print_expr(e->d.ADDROF.right);
+    print_expr(e -> d.ADDROF.right);
     printf(")");
     break;
   case T_TYPECONV:
     printf("TYPECONV(");
-    print_type(e->d.TYPECONV.t);
+    print_type(&e -> d.TYPECONV.t);
     printf(",");
-    print_expr(e->d.TYPECONV.right);
-    printf(")");
-    break;
-  case T_RI:
-    printf("READ_INT()");
-    break;
-  case T_RC:
-    printf("READ_CHAR()");
-    break;
-  case T_MALLOC:
-    printf("MALLOC(");
-    print_expr(e -> d.MALLOC.size);
+    print_expr(e -> d.TYPECONV.right);
     printf(")");
     break;
   }
 }
 
-void print_cmd(struct Cmd *c)
-{
-  switch (c->t)
-  {
+void print_cmd(struct Cmd * c) {
+  switch (c -> t) {
   case T_ASGN:
     printf("ASGN(");
-    printf("%s", c->d.ASGN.left);
+    printf("%s", c -> d.ASGN.left);
     printf(",");
-    print_expr(c->d.ASGN.right);
+    print_expr(c -> d.ASGN.right);
     printf(")");
     break;
   case T_ASGNDREF:
     printf("ASGNDREF(");
-    print_expr(c->d.ASGNDREF.left);
+    print_expr(c -> d.ASGNDREF.left);
     printf(",");
-    print_expr(c->d.ASGNDREF.right);
+    print_expr(c -> d.ASGNDREF.right);
     printf(")");
     break;
   case T_SKIP:
     printf("SKIP");
     break;
   case T_VARDECLARE:
-    printf("VARDECLARE(%s)", c->d.VARDECLARE.var_name);
+    printf("VARDECLARE(%s)", c -> d.VARDECLARE.var_name);
     break;
   case T_SEQ:
     printf("SEQ(");
-    print_cmd(c->d.SEQ.left);
+    print_cmd(c -> d.SEQ.left);
     printf(",");
-    print_cmd(c->d.SEQ.right);
+    print_cmd(c -> d.SEQ.right);
     printf(")");
     break;
   case T_IF:
     printf("IF(");
-    print_expr(c->d.IF.cond);
+    print_expr(c -> d.IF.cond);
     printf(",");
-    print_cmd(c->d.IF.left);
+    print_cmd(c -> d.IF.left);
     printf(",");
-    print_cmd(c->d.IF.right);
+    print_cmd(c -> d.IF.right);
     printf(")");
     break;
   case T_WHILE:
     printf("WHILE(");
-    print_expr(c->d.WHILE.cond);
+    print_expr(c -> d.WHILE.cond);
     printf(",");
-    print_cmd(c->d.WHILE.body);
-    printf(")");
-    break;
-  case T_WI:
-    printf("WRITE_INT(");
-    print_expr(c -> d.WI.right);
-    printf(")");
-    break;
-  case T_WC:
-    printf("WRITE_CHAR(");
-    print_expr(c -> d.WC.right);
+    print_cmd(c -> d.WHILE.body);
     printf(")");
     break;
   }

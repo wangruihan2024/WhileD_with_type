@@ -9,7 +9,7 @@
 %}
 
 %union {
-unsigned int n;
+unsigned long long n;
 char * i;
 struct Expr * e;
 struct Cmd * c;
@@ -23,9 +23,8 @@ void * none;
 %token <none> TM_LEFT_BRACE TM_RIGHT_BRACE
 %token <none> TM_LEFT_PAREN TM_RIGHT_PAREN
 %token <none> TM_SEMICOL
-%token <none> TM_MALLOC TM_RI TM_RC TM_WI TM_WC
 %token <none> TM_VAR TM_IF TM_THEN TM_ELSE TM_WHILE TM_DO TM_SKIP
-%token <none> TM_INT TM_SHORT TM_LONG TM_LONGLONG TM_BOOL
+%token <none> TM_INT TM_SHORT TM_LONG TM_LONGLONG
 %token <none> TM_ASGNOP
 %token <none> TM_OR
 %token <none> TM_AND
@@ -90,14 +89,6 @@ NT_CMD:
   {
     $$ = TWhile($3, $7);
   }
-| TM_WI TM_LEFT_PAREN NT_EXPR TM_RIGHT_PAREN
-  {
-    $$ = (TWriteInt($3));
-  }
-| TM_WC TM_LEFT_PAREN NT_EXPR TM_RIGHT_PAREN
-  {
-    $$ = (TWriteChar($3));
-  }
 ;
 
 NT_TYPE:
@@ -112,10 +103,6 @@ NT_TYPE:
 | TM_LONG
   {
     $$ = new_VarType_BASIC(T_LONG);
-  }
-| TM_BOOL
-  {
-    $$ = new_VarType_BASIC(T_BOOL);
   }
 | TM_LONGLONG
   {
@@ -211,18 +198,6 @@ NT_EXPR:
 | NT_EXPR TM_NE NT_EXPR
   {
     $$ = TBinOp(T_NE, $1, $3);
-  }
-| TM_RI TM_LEFT_PAREN TM_RIGHT_PAREN
-  {
-    $$ = (TReadInt());
-  }
-| TM_RC TM_LEFT_PAREN TM_RIGHT_PAREN
-  {
-    $$ = (TReadChar());
-  }
-| TM_MALLOC TM_LEFT_PAREN NT_EXPR TM_RIGHT_PAREN
-  {
-    $$ = (TMalloc($3));
   }
 ;
 
