@@ -1,6 +1,5 @@
 int a; int b;
 a = 10;
 while (a > 0) do {
-    b = read_int();
-    if (b == 0) then { write_int(a) } else { a = a - b }
+    if (b == 0) then { SKIP } else { a = a - b }
 }

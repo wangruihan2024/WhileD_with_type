@@ -1,3 +1,0 @@
-int x;
-x = read_int();
-write_int(x + 1)

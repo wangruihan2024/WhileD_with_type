@@ -2,7 +2,4 @@ int x; int *p; int **pp;
 x = 10;
 p = &x;
 pp = &p;
-write_int(*p);
-write_int(**pp);
-*p = *(&x) + 1;
-write_int(x)
+*p = *(&x) + 1
