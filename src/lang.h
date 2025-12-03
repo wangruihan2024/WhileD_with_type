@@ -1,61 +1,63 @@
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #ifndef LANG_H_INCLUDED
 #define LANG_H_INCLUDED
 
 #include <stdio.h>
 #include <stdlib.h>
 
-enum BasicVarType
-{
-  T_INT,
-  T_SHORT,
-  T_LONG,
-  T_LONGLONG,
-  T_BOOL
-};
-
-enum TypeDenoted
-{
-  T_BASIC,
-  T_PTR
-};
-
-struct VarType
-{
-  enum TypeDenoted tag;
-  union
+  enum BasicVarType
   {
-    enum BasicVarType tbasic;
-    struct
-    {
-      struct VarType *pointt; // 指向的类型
-    } tptr;
+    T_INT,
+    T_SHORT,
+    T_LONG,
+    T_LONGLONG,
+    T_BOOL
   };
-};
 
-enum BinOpType
-{
-  T_PLUS,
-  T_MINUS,
-  T_MUL,
-  T_DIV,
-  T_MOD,
+  enum TypeDenoted
+  {
+    T_BASIC,
+    T_PTR
+  };
 
-  T_AND,
-  T_OR,
+  struct VarType
+  {
+    enum TypeDenoted tag;
+    union
+    {
+      enum BasicVarType tbasic;
+      struct VarType *tptr; // 指向的类型
+    };
+  };
 
-  T_LT,
-  T_GT,
-  T_LE,
-  T_GE,
-  T_EQ,
-  T_NE
-};
+  enum BinOpType
+  {
+    T_PLUS,
+    T_MINUS,
+    T_MUL,
+    T_DIV,
+    T_MOD,
 
-enum UnOpType
-{
-  T_NEG,
-  T_NOT
-};
+    T_AND,
+    T_OR,
+
+    T_LT,
+    T_GT,
+    T_LE,
+    T_GE,
+    T_EQ,
+    T_NE
+  };
+
+  enum UnOpType
+  {
+    T_NEG,
+    T_NOT
+  };
 
 enum ExprType
 {
@@ -213,17 +215,23 @@ struct Cmd *TVarDeclare(struct VarType *, char *);
 struct Cmd *TWriteInt(struct Expr *right);
 struct Cmd *TWriteChar(struct Expr *right);
 
-struct VarType *new_VarType_BASIC(enum BasicVarType);
-struct VarType *new_VarType_PTR(struct VarType *);
-struct Expr *new_Expr_ptr();
-struct Cmd *new_Cmd_ptr();
+  struct VarType new_VarType_BASIC(enum BasicVarType);
+  struct VarType new_VarType_PTR(struct VarType);
+  struct Expr *new_Expr_ptr();
+  struct Cmd *new_Cmd_ptr();
 
-void print_binop(enum BinOpType op);
-void print_unop(enum UnOpType op);
-void print_expr(struct Expr * e);
-void print_cmd(struct Cmd * c);
+  void print_binop(enum BinOpType op);
+  void print_unop(enum UnOpType op);
+  void print_expr(struct Expr *e);
+  void print_cmd(struct Cmd *c);
 
-unsigned long long build_nat(const char *text, int len);
-char *new_str(const char *text, int len);
+  unsigned long long build_nat(const char *text, int len);
+  char *new_str(const char *text, int len);
+
+  int VarTypeCmp(struct VarType, struct VarType);
 
 #endif // LANG_H_INCLUDED
+
+#ifdef __cplusplus
+}
+#endif

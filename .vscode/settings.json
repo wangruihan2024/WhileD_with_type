@@ -46,6 +46,7 @@
         "memory": "cpp",
         "bitset": "cpp",
         "deque": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "checker.h": "c"
     }
 }

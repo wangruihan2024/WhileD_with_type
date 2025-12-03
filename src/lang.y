@@ -13,7 +13,7 @@ unsigned int n;
 char * i;
 struct Expr * e;
 struct Cmd * c;
-struct VarType * t;
+struct VarType t;
 void * none;
 }
 
