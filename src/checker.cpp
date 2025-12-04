@@ -134,7 +134,7 @@ VarType checkexpr(struct Expr *e, struct VarTypeEnv *env)
     case T_CONST:
         // 默认落在INT范围内，唯一涉及语义的地方🤔
         // 后续可能还得改一改风格，这种超长链条的内存访问ww
-        if (INT32_MIN <= e->d.CONST.value && e->d.CONST.value <= INT32_MAX)
+        if (e->d.CONST.value <= INT32_MAX)
             return new_VarType_BASIC(T_INT);
         else
             return new_VarType_BASIC(T_LONGLONG);
