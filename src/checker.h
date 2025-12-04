@@ -11,12 +11,12 @@ struct VarTypeEnv
     struct VarTypeEnv *parent; // 父作用域，全局作用域则为空
 };
 
-VarType checkexpr(struct Expr *e, struct VarTypeEnv *env);
-
 // 无隐式转换版本
+VarType checkexpr(struct Expr *e, struct VarTypeEnv *env);
 void checkcmd(struct Cmd *, struct VarTypeEnv *);
 
 // 隐式转换版本
+VarType checkexpr_conv(struct Expr *e, struct VarTypeEnv *env);
 void checkcmd_conv(struct Cmd *, struct VarTypeEnv *);
 
 #endif

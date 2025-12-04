@@ -11,8 +11,8 @@ extern "C"
 
   enum BasicVarType
   {
-    T_INT,
     T_SHORT,
+    T_INT,
     T_LONG,
     T_LONGLONG,
   };
@@ -58,32 +58,32 @@ extern "C"
     T_NOT
   };
 
-enum ExprType
-{
-  T_CONST = 0,
-  T_VAR,
-  T_BINOP,
-  T_UNOP,
-  T_DEREF,
-  T_ADDROF,
-  T_TYPECONV,
-};
+  enum ExprType
+  {
+    T_CONST = 0,
+    T_VAR,
+    T_BINOP,
+    T_UNOP,
+    T_DEREF,
+    T_ADDROF,
+    T_TYPECONV,
+  };
 
-enum CmdType
-{
-  T_SKIP = 0,
-  T_ASGN,
-  T_ASGNDREF,
-  T_SEQ,
-  T_IF,
-  T_WHILE,
-  T_VARDECLARE,
-};
+  enum CmdType
+  {
+    T_SKIP = 0,
+    T_ASGN,
+    T_ASGNDREF,
+    T_SEQ,
+    T_IF,
+    T_WHILE,
+    T_VARDECLARE,
+  };
 
-struct Expr
-{
-  enum ExprType t;
-  union
+  struct Expr
+  {
+    enum ExprType t;
+    union
     {
       struct
       {
@@ -118,76 +118,76 @@ struct Expr
         struct Expr *right;
       } TYPECONV;
     } d;
-};
+  };
 
-struct Cmd
-{
-  enum CmdType t;
-  union
+  struct Cmd
   {
-    struct
+    enum CmdType t;
+    union
     {
-      char *left;
-      struct Expr *right;
-    } ASGN;
-    struct
-    {
-      struct Expr *left;
-      struct Expr *right;
-    } ASGNDREF;
-    struct
-    {
-      void *__;
-    } SKIP;
-    struct
-    {
-      struct Cmd *left;
-      struct Cmd *right;
-    } SEQ;
-    struct
-    {
-      struct Expr *cond;
-      struct Cmd *left;
-      struct Cmd *right;
-    } IF;
-    struct
-    {
-      struct Expr *cond;
-      struct Cmd *body;
-    } WHILE;
-    struct
-    {
-      struct VarType t;
-      char *var_name;
-    } VARDECLARE;
-  } d;
-};
+      struct
+      {
+        char *left;
+        struct Expr *right;
+      } ASGN;
+      struct
+      {
+        struct Expr *left;
+        struct Expr *right;
+      } ASGNDREF;
+      struct
+      {
+        void *__;
+      } SKIP;
+      struct
+      {
+        struct Cmd *left;
+        struct Cmd *right;
+      } SEQ;
+      struct
+      {
+        struct Expr *cond;
+        struct Cmd *left;
+        struct Cmd *right;
+      } IF;
+      struct
+      {
+        struct Expr *cond;
+        struct Cmd *body;
+      } WHILE;
+      struct
+      {
+        struct VarType t;
+        char *var_name;
+      } VARDECLARE;
+    } d;
+  };
 
-// 这里在声明构造函数呀，笑死了刚才写注释用的 (* ? *)
-struct Expr *TConst(unsigned long long);
-struct Expr *TVar(char *);
-struct Expr *TBinOp(enum BinOpType,
-                    struct Expr *,
-                    struct Expr *);
-struct Expr *TUnOP(enum UnOpType, struct Expr *);
-struct Expr *TDeref(struct Expr *);
-struct Expr *TAddrof(struct Expr *);
-struct Expr *TTypeConv(struct VarType , struct Expr *);
+  // 这里在声明构造函数呀，笑死了刚才写注释用的 (* ? *)
+  struct Expr *TConst(unsigned long long);
+  struct Expr *TVar(char *);
+  struct Expr *TBinOp(enum BinOpType,
+                      struct Expr *,
+                      struct Expr *);
+  struct Expr *TUnOP(enum UnOpType, struct Expr *);
+  struct Expr *TDeref(struct Expr *);
+  struct Expr *TAddrof(struct Expr *);
+  struct Expr *TTypeConv(struct VarType, struct Expr *);
 
-struct Expr *TReadInt();
-struct Expr *TReadChar();
-struct Expr *TMalloc(struct Expr *);
+  struct Expr *TReadInt();
+  struct Expr *TReadChar();
+  struct Expr *TMalloc(struct Expr *);
 
-struct Cmd *TAsgn(char *left, struct Expr *right);
-struct Cmd *TAsgnDref(struct Expr *left, struct Expr *right); // 解引用赋值的特殊情况
-struct Cmd *TSkip();
-struct Cmd *TSeq(struct Cmd *, struct Cmd *);
-struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
-struct Cmd *TWhile(struct Expr *, struct Cmd *);
-struct Cmd *TVarDeclare(struct VarType , char *);
+  struct Cmd *TAsgn(char *left, struct Expr *right);
+  struct Cmd *TAsgnDref(struct Expr *left, struct Expr *right); // 解引用赋值的特殊情况
+  struct Cmd *TSkip();
+  struct Cmd *TSeq(struct Cmd *, struct Cmd *);
+  struct Cmd *TIf(struct Expr *, struct Cmd *, struct Cmd *);
+  struct Cmd *TWhile(struct Expr *, struct Cmd *);
+  struct Cmd *TVarDeclare(struct VarType, char *);
 
-struct Cmd *TWriteInt(struct Expr *right);
-struct Cmd *TWriteChar(struct Expr *right);
+  struct Cmd *TWriteInt(struct Expr *right);
+  struct Cmd *TWriteChar(struct Expr *right);
 
   struct VarType new_VarType_BASIC(enum BasicVarType);
   struct VarType new_VarType_PTR(struct VarType);
@@ -198,6 +198,7 @@ struct Cmd *TWriteChar(struct Expr *right);
   void print_unop(enum UnOpType op);
   void print_expr(struct Expr *e);
   void print_cmd(struct Cmd *c);
+  void print_type(struct VarType t);
 
   unsigned long long build_nat(const char *text, int len);
   char *new_str(const char *text, int len);

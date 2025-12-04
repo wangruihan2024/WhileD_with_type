@@ -4,7 +4,7 @@
 #include "lang.h"
 #include "checker.h"
 
-VarType lookup_vartype(struct VarTypeEnv *env, char *name)
+VarType lookup_vartype_conv(struct VarTypeEnv *env, char *name)
 {
     auto it = env->vartypes.find(name);
     if (it != env->vartypes.end())
@@ -21,7 +21,7 @@ VarType lookup_vartype(struct VarTypeEnv *env, char *name)
     {
         if (env->parent) // 如果父作用域存在，则递归回去寻找
         {
-            return lookup_vartype(env->parent, name);
+            return lookup_vartype_conv(env->parent, name);
         }
         else // 找到全局作用域还没有获取到类型，则不存在
         {
@@ -30,10 +30,11 @@ VarType lookup_vartype(struct VarTypeEnv *env, char *name)
         }
     }
 }
-VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
+
+VarType check_binop_conv(struct Expr *e, struct VarTypeEnv *env)
 {
-    VarType left = checkexpr(e->d.BINOP.left, env);
-    VarType right = checkexpr(e->d.BINOP.right, env);
+    VarType left = checkexpr_conv(e->d.BINOP.left, env);
+    VarType right = checkexpr_conv(e->d.BINOP.right, env);
     switch (e->d.BINOP.op)
     {
     case T_PLUS:
@@ -94,9 +95,9 @@ VarType check_binop(struct Expr *e, struct VarTypeEnv *env)
         exit(0);
     }
 }
-VarType check_unop(struct Expr *e, struct VarTypeEnv *env)
+VarType check_unop_conv(struct Expr *e, struct VarTypeEnv *env)
 {
-    VarType expr_type = checkexpr(e->d.UNOP.right, env);
+    VarType expr_type = checkexpr_conv(e->d.UNOP.right, env);
     if (expr_type.tag == T_PTR)
     {
         std::cerr << "[Error]: 指针类型不支持一元运算符" << std::endl;
@@ -113,7 +114,7 @@ VarType check_unop(struct Expr *e, struct VarTypeEnv *env)
             //     exit(0);
             // }
             // else
-                return expr_type;
+            return expr_type;
         case T_NOT:
             if (expr_type.tbasic == T_INT)
                 return expr_type;
@@ -127,7 +128,7 @@ VarType check_unop(struct Expr *e, struct VarTypeEnv *env)
 }
 
 // 先定义表达式的类型检查叭
-VarType checkexpr(struct Expr *e, struct VarTypeEnv *env)
+VarType checkexpr_conv(struct Expr *e, struct VarTypeEnv *env)
 {
     switch (e->t)
     {
@@ -139,26 +140,26 @@ VarType checkexpr(struct Expr *e, struct VarTypeEnv *env)
         else
             return new_VarType_BASIC(T_LONGLONG);
     case T_VAR:
-        return lookup_vartype(env, e->d.VAR.name); // 支持父域查找
+        return lookup_vartype_conv(env, e->d.VAR.name); // 支持父域查找
     case T_BINOP:
-        return check_binop(e, env);
+        return check_binop_conv(e, env);
     case T_UNOP:
-        return check_unop(e, env);
+        return check_unop_conv(e, env);
     case T_DEREF:
     {
-        VarType t = checkexpr(e->d.DEREF.right, env);
+        VarType t = checkexpr_conv(e->d.DEREF.right, env);
         switch (t.tag) // 根据tag来跟踪union中到底是谁有效
         {
         case T_PTR:
             return *t.tptr; // 交出指针包裹的类型
         case T_BASIC:
-            std::cerr << "cannot dereference non-pointer" << std::endl;
+            std::cerr << "[Error]：不能解引用非指针类型" << std::endl;
             exit(0);
         }
     }
     case T_ADDROF:
     {
-        VarType t = checkexpr(e->d.ADDROF.right, env);
+        VarType t = checkexpr_conv(e->d.ADDROF.right, env);
         switch (e->d.ADDROF.right->t) // 表达式，
         {
         case T_VAR:
@@ -176,7 +177,7 @@ VarType checkexpr(struct Expr *e, struct VarTypeEnv *env)
 
 // 直觉理解上，要边建立基础环境，同时进行类型分析
 // 递归执行语句的类型检查
-void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
+void checkcmd_conv(struct Cmd *c, struct VarTypeEnv *env)
 {
     switch (c->t)
     {
@@ -184,8 +185,8 @@ void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
         return; // 无事发生直接退出，出问题的选择是直接退出程序，“编译失败”
     case T_ASGN:
     {
-        VarType left_type = lookup_vartype(env, c->d.ASGN.left);
-        VarType right_type = checkexpr(c->d.ASGN.right, env);
+        VarType left_type = lookup_vartype_conv(env, c->d.ASGN.left);
+        VarType right_type = checkexpr_conv(c->d.ASGN.right, env);
         if (VarTypeCmp(left_type, right_type))
             return; // 左右类型匹配，则OK
         std::cerr << "" << std::endl;
@@ -197,16 +198,16 @@ void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
         Expr deref;
         deref.t = T_DEREF;
         deref.d.DEREF.right = c->d.ASGNDREF.left;
-        VarType left_type = checkexpr(&deref, env); // 帮忙解引用了
-        VarType right_type = checkexpr(c->d.ASGNDREF.right, env);
+        VarType left_type = checkexpr_conv(&deref, env); // 帮忙解引用了
+        VarType right_type = checkexpr_conv(c->d.ASGNDREF.right, env);
         if (VarTypeCmp(left_type, right_type))
             return;
         std::cerr << "[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）" << std ::endl;
         exit(0);
     }
     case T_SEQ:
-        checkcmd(c->d.SEQ.left, env);
-        checkcmd(c->d.SEQ.right, env);
+        checkcmd_conv(c->d.SEQ.left, env);
+        checkcmd_conv(c->d.SEQ.right, env);
         return;
     case T_IF:
     {
@@ -214,17 +215,17 @@ void checkcmd(struct Cmd *c, struct VarTypeEnv *env)
         // IF语句对了类型分析唯一的影响是作用域是叭🤔
         VarTypeEnv left_son;
         left_son.parent = env;
-        checkcmd(c->d.IF.left, &left_son);
+        checkcmd_conv(c->d.IF.left, &left_son);
         VarTypeEnv right_son;
         right_son.parent = env;
-        checkcmd(c->d.IF.right, &right_son);
+        checkcmd_conv(c->d.IF.right, &right_son);
         return;
     }
     case T_WHILE:
     {
         VarTypeEnv son;
         son.parent = env;
-        checkcmd(c->d.WHILE.body, &son);
+        checkcmd_conv(c->d.WHILE.body, &son);
         return;
     }
     case T_VARDECLARE:

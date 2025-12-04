@@ -22,8 +22,9 @@ LANG_H  = $(SRC_DIR)/lang.h
 LANG_Y  = $(SRC_DIR)/lang.y
 LANG_L  = $(SRC_DIR)/lang.l
 MAIN_CPP = $(SRC_DIR)/main.cpp
-CHECKER_CPP = $(SRC_DIR)/checker.cpp
 CHECKER_H   = $(SRC_DIR)/checker.h
+CHECKER_CPP = $(SRC_DIR)/checker.cpp
+CHECKER_CONV_CPP = $(SRC_DIR)/checker_conv.cpp
 
 # Bison/Flex 生成文件
 PARSER_C = $(BUILD_DIR)/parser.c
@@ -37,6 +38,7 @@ PARSER_O  = $(BUILD_DIR)/parser.o
 LEXER_O   = $(BUILD_DIR)/lexer.o
 MAIN_O    = $(BUILD_DIR)/main.o
 CHECKER_O = $(BUILD_DIR)/checker.o
+CHECKER_CONV_O = $(BUILD_DIR)/checker_conv.o
 
 # 禁用所有隐式规则和隐式变量
 MAKEFLAGS += --no-builtin-rules
@@ -115,11 +117,14 @@ $(MAIN_O): $(MAIN_CPP) $(LEXER_H) $(PARSER_H) $(LANG_H) $(CHECKER_H)
 $(CHECKER_O): $(CHECKER_CPP) $(CHECKER_H) $(LANG_H)
 	$(CXX) $(CXXFLAGS) -c $(CHECKER_CPP) -o $(CHECKER_O)
 
+$(CHECKER_CONV_O): $(CHECKER_CONV_CPP) $(CHECKER_H) $(LANG_H)
+	$(CXX) $(CXXFLAGS) -c $(CHECKER_CONV_CPP) -o $(CHECKER_CONV_O)
+
 # ==========================================
 # 链接（必须用 g++）
 # ==========================================
-$(TARGET): $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_O) $(MAIN_O) | $(BIN_DIR)
-	$(LD) $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_O) $(MAIN_O) -o $(TARGET)
+$(TARGET): $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_O) $(CHECKER_CONV_O) $(MAIN_O) | $(BIN_DIR)
+	$(LD) $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_O) $(CHECKER_CONV_O) $(MAIN_O) -o $(TARGET)
 
 # ==========================================
 # 清理
