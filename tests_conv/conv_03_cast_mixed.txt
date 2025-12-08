@@ -1,0 +1,5 @@
+int a;
+long *p;
+a = 100;
+p = (long *) a;
+a = (int) p

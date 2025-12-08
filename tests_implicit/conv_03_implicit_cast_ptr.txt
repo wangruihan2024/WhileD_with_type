@@ -1,0 +1,7 @@
+int *p;
+short offset_s;
+long long offset_ll;
+offset_s = 2;
+offset_ll = 1000;
+p = p + offset_s;
+p = p + offset_ll

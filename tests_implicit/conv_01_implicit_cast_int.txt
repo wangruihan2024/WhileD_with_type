@@ -1,0 +1,8 @@
+short s;
+int i;
+long l;
+long long ll;
+s = 100;
+ll = s;
+i = ll;
+l = i + s
