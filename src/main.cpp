@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     // and如果需要同时展示，那么应当开两个新的环境
 
     VarTypeEnv env;
-    checkcmd(root, &env); // 笑死，发生了超级无敌神秘bug，把conv和普通的名字写混了（
+    checkcmd_implicit(root, &env); // 笑死，发生了超级无敌神秘bug，把conv和普通的名字写混了（
     printf("类型检查成功\n隐式转换显式化后的AST树：\n");
 
     print_cmd(root); // 初始的AST解析结果

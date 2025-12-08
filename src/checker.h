@@ -12,11 +12,11 @@ struct VarTypeEnv
 };
 
 // 无隐式转换版本
-VarType checkexpr(struct Expr *e, struct VarTypeEnv *env);
-void checkcmd(struct Cmd *, struct VarTypeEnv *);
+VarType checkexpr_strict(struct Expr *e, struct VarTypeEnv *env);
+void checkcmd_strict(struct Cmd *, struct VarTypeEnv *);
 
 // 隐式转换版本
-VarType checkexpr_conv(struct Expr *e, struct VarTypeEnv *env);
-void checkcmd_conv(struct Cmd *, struct VarTypeEnv *);
+VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env);
+void checkcmd_implicit(struct Cmd *, struct VarTypeEnv *);
 
 #endif
