@@ -169,7 +169,7 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
         }
     }
     case T_TYPECONV:
-        VarType src_t = checkexpr_strict(e->d.TYPECONV.right, env);
+        VarType src_t = checkexpr_implicit(e->d.TYPECONV.right, env);
         VarType dest_t = e->d.TYPECONV.t;
         
         if (src_t.tag == T_BASIC && dest_t.tag == T_BASIC)
