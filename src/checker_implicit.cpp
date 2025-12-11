@@ -19,13 +19,7 @@ VarType lookup_vartype(VarTypeEnv *env, char *name)
     auto it = env->vartypes.find(name);
     if (it != env->vartypes.end())
     {
-        switch (it->second.tag)
-        {
-        case T_BASIC:
-            return new_VarType_BASIC(it->second.tbasic);
-        case T_PTR:
-            return new_VarType_PTR(*it->second.tptr);
-        }
+        return it->second;
     }
     else
     {
@@ -188,7 +182,7 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
         }
         else
         {
-            exception("[Error]: 不支持的类型转换（无隐式转换）");
+            exception("[Error]: 不支持的类型转换");
         }
     }
     return VarType{}; // 永远不会到达这里

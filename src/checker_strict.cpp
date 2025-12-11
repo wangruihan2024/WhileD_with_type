@@ -13,13 +13,7 @@ VarType lookup_vartype_conv(struct VarTypeEnv *env, char *name)
     auto it = env->vartypes.find(name);
     if (it != env->vartypes.end())
     {
-        switch (it->second.tag)
-        {
-        case T_BASIC:
-            return new_VarType_BASIC(it->second.tbasic);
-        case T_PTR:
-            return new_VarType_PTR(*it->second.tptr);
-        }
+        return it->second;
     }
     else
     {

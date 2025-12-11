@@ -17,12 +17,9 @@ int main(int argc, char **argv)
     print_cmd(root); // 初始的AST解析结果
     printf("\n\n");
 
-    // checkcmd(root, &env);
-    // 这倒是如果使用了checkcmd_conv则root会被修改
-    // 如果使用了checkcmd则可能直接报错炸掉啊😆
-    // and如果需要同时展示，那么应当开两个新的环境
 
     VarTypeEnv env1;
+    env1.parent = nullptr;
     try
     {
         checkcmd_strict(root, &env1);
@@ -37,6 +34,7 @@ int main(int argc, char **argv)
 
 
     VarTypeEnv env2;
+    env2.parent = nullptr;
     try
     {
         checkcmd_implicit(root, &env2);
@@ -46,7 +44,7 @@ int main(int argc, char **argv)
         printf("\n");
     } catch (const std::exception &e)
     {
-        printf("隐式转换显式化失败：%s\n\n", e.what());
+        printf("隐式转换显式化失败：%s\n", e.what());
     }
     return 0;
 }
