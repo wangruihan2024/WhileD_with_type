@@ -1,6 +1,0 @@
-初始的AST解析结果：
-SEQ(VARDECLARE(p1),SEQ(VARDECLARE(p2),SEQ(VARDECLARE(p3),SEQ(ASGN(p1,CONST(0)),SEQ(ASGN(p2,CONST(0)),SEQ(ASGN(p3,CONST(0)),SEQ(ASGN(p2,VAR(p1)),ASGN(p3,VAR(p2)))))))))
-
-严格类型检查失败：[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）
-
-隐式转换显式化失败：[Error]: 不支持指针类型的隐式转换

@@ -1,9 +1,0 @@
-int a;
-short b;
-long c;
-long long d;
-a = 10;
-b = (short) a;
-c = (long) b;
-d = (long long) c
-

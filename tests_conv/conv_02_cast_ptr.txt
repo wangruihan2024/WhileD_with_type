@@ -1,7 +1,0 @@
-int *p;
-long *q;
-int x;
-x = 1;
-p = &x;
-q = (long *) p;
-p = (int *) q
