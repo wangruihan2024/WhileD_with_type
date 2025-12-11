@@ -255,8 +255,7 @@ void checkcmd_implicit(struct Cmd *c, struct VarTypeEnv *env)
         return;
     case T_IF:
     {
-        // 任意表达式都能作为条件放入，就不管了
-        // IF语句对了类型分析唯一的影响是作用域是叭🤔
+        checkexpr_implicit(c->d.IF.cond, env);
         VarTypeEnv left_son;
         left_son.parent = env;
         checkcmd_implicit(c->d.IF.left, &left_son);
@@ -267,6 +266,7 @@ void checkcmd_implicit(struct Cmd *c, struct VarTypeEnv *env)
     }
     case T_WHILE:
     {
+        checkexpr_implicit(c->d.WHILE.cond, env);
         VarTypeEnv son;
         son.parent = env;
         checkcmd_implicit(c->d.WHILE.body, &son);
