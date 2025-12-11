@@ -23,8 +23,8 @@ LANG_Y  = $(SRC_DIR)/lang.y
 LANG_L  = $(SRC_DIR)/lang.l
 MAIN_CPP = $(SRC_DIR)/main.cpp
 CHECKER_H   = $(SRC_DIR)/checker.h
-CHECKER_CPP = $(SRC_DIR)/checker.cpp
-CHECKER_CONV_CPP = $(SRC_DIR)/checker_conv.cpp
+CHECKER_STRICT_CPP = $(SRC_DIR)/checker_strict.cpp
+CHECKER_IMPLICIT_CPP = $(SRC_DIR)/checker_implicit.cpp
 
 # Bison/Flex 生成文件
 PARSER_C = $(BUILD_DIR)/parser.c
@@ -114,11 +114,11 @@ $(LEXER_O): $(LEXER_C) $(LEXER_H) $(PARSER_H) $(LANG_H)
 $(MAIN_O): $(MAIN_CPP) $(LEXER_H) $(PARSER_H) $(LANG_H) $(CHECKER_H)
 	$(CXX) $(CXXFLAGS) -c $(MAIN_CPP) -o $(MAIN_O)
 
-$(CHECKER_O): $(CHECKER_CPP) $(CHECKER_H) $(LANG_H)
-	$(CXX) $(CXXFLAGS) -c $(CHECKER_CPP) -o $(CHECKER_O)
+$(CHECKER_O): $(CHECKER_STRICT_CPP) $(CHECKER_H) $(LANG_H)
+	$(CXX) $(CXXFLAGS) -c $(CHECKER_STRICT_CPP) -o $(CHECKER_O)
 
-$(CHECKER_CONV_O): $(CHECKER_CONV_CPP) $(CHECKER_H) $(LANG_H)
-	$(CXX) $(CXXFLAGS) -c $(CHECKER_CONV_CPP) -o $(CHECKER_CONV_O)
+$(CHECKER_CONV_O): $(CHECKER_IMPLICIT_CPP) $(CHECKER_H) $(LANG_H)
+	$(CXX) $(CXXFLAGS) -c $(CHECKER_IMPLICIT_CPP) -o $(CHECKER_CONV_O)
 
 # ==========================================
 # 链接（必须用 g++）
