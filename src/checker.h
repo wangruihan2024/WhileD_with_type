@@ -19,4 +19,6 @@ void checkcmd_strict(struct Cmd *, struct VarTypeEnv *);
 VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env);
 void checkcmd_implicit(struct Cmd *, struct VarTypeEnv *);
 
+void exception(const std::string &msg);
+
 #endif

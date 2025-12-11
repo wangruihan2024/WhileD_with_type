@@ -1,7 +1,12 @@
 #include <stdlib.h>
-#include <iostream>
 #include "lang.h"
 #include "checker.h"
+#include <stdexcept>
+
+void exception(const std::string &msg)
+{
+    throw std::runtime_error(msg);
+}
 
 VarType lookup_vartype_conv(struct VarTypeEnv *env, char *name)
 {
@@ -24,10 +29,10 @@ VarType lookup_vartype_conv(struct VarTypeEnv *env, char *name)
         }
         else // 找到全局作用域还没有获取到类型，则不存在
         {
-            std ::cerr << "[Error]: 使用了未声明的变量" << std::endl;
-            exit(0);
+            exception("[Error]: 使用了未声明的变量");
         }
     }
+    return VarType{}; // 永远不会到达这里
 }
 
 VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
@@ -48,12 +53,10 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
             case T_BASIC:
                 return left;
             case T_PTR:
-                std ::cerr << "[Error]: 指针类型不能相加/减/乘" << std::endl;
-                exit(0);
+                exception("[Error]: 指针类型不能相加/减/乘");
             }
         }
-        std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
-        exit(0);
+        exception("[Error]: 操作数类型不一致（没有隐式转换的版本）");
     case T_AND:
     case T_OR:
         if (VarTypeCmp(left, right))
@@ -61,15 +64,12 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
             switch (left.tag)
             {
             case T_BASIC:
-                std ::cerr << "[Error]: 整数类型不能与，非（没有隐式转换的版本）" << std::endl;
-                exit(0);
+                exception("[Error]: 整数类型不能与，非（没有隐式转换的版本）");
             case T_PTR:
-                std ::cerr << "[Error]: 指针类型不能相与，非" << std::endl;
-                exit(0);
+                exception("[Error]: 指针类型不能相与，非");
             }
         }
-        std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
-        exit(0);
+        exception("[Error]: 操作数类型不一致（没有隐式转换的版本）");
     case T_LT:
     case T_GT:
     case T_LE:
@@ -83,21 +83,19 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
             case T_BASIC:
                 return new_VarType_BASIC(T_INT);
             case T_PTR:
-                std ::cerr << "[Error]: 指针类型不能比较" << std::endl;
-                exit(0);
+                exception("[Error]: 指针类型不能比较");
             }
         }
-        std ::cerr << "[Error]: 操作数类型不一致（没有隐式转换的版本）" << std::endl;
-        exit(0);
+        exception("[Error]: 操作数类型不一致（没有隐式转换的版本）");
     }
+    return VarType{}; // 永远不会到达这里
 }
 VarType check_unop_strict(struct Expr *e, struct VarTypeEnv *env)
 {
     VarType expr_type = checkexpr_strict(e->d.UNOP.right, env);
     if (expr_type.tag == T_PTR)
     {
-        std::cerr << "[Error]: 指针类型不支持一元运算符" << std::endl;
-        exit(0);
+        exception("[Error]: 指针类型不支持一元运算符");
     }
     else
     {
@@ -110,11 +108,11 @@ VarType check_unop_strict(struct Expr *e, struct VarTypeEnv *env)
                 return expr_type;
             else
             {
-                std::cerr << "[Error]: 不是INT套壳的Bool不能取反（无隐式类型转化）" << std::endl;
-                exit(0);
+                exception("[Error]: 不是INT套壳的Bool不能取反（无隐式类型转化）");
             }
         }
     }
+    return VarType{}; // 永远不会到达这里
 }
 
 // 先定义表达式的类型检查叭
@@ -143,8 +141,7 @@ VarType checkexpr_strict(struct Expr *e, struct VarTypeEnv *env)
         case T_PTR:
             return *t.tptr; // 交出指针包裹的类型
         case T_BASIC:
-            std::cerr << "[Error]：不能解引用非指针类型" << std::endl;
-            exit(0);
+            exception("[Error]：不能解引用非指针类型");
         }
     }
     case T_ADDROF:
@@ -156,13 +153,13 @@ VarType checkexpr_strict(struct Expr *e, struct VarTypeEnv *env)
         case T_DEREF:
             return new_VarType_PTR(t);
         default:
-            std::cerr << "[Error]: 取地址需要左值表达式" << std::endl;
-            exit(0);
+            exception("[Error]: 取地址需要左值表达式");
         }
     }
     case T_TYPECONV:
         return e->d.TYPECONV.t; // MARK: 无论如何直接转换
     }
+    return VarType{}; // 永远不会到达这里
 }
 
 // 直觉理解上，要边建立基础环境，同时进行类型分析
@@ -179,9 +176,7 @@ void checkcmd_strict(struct Cmd *c, struct VarTypeEnv *env)
         VarType right_type = checkexpr_strict(c->d.ASGN.right, env);
         if (VarTypeCmp(left_type, right_type))
             return; // 左右类型匹配，则OK
-        std::cerr << "" << std::endl;
-        std::cerr << "[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）" << std ::endl;
-        exit(0);
+        exception("[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）");
     }
     case T_ASGNDREF:
     {
@@ -192,8 +187,7 @@ void checkcmd_strict(struct Cmd *c, struct VarTypeEnv *env)
         VarType right_type = checkexpr_strict(c->d.ASGNDREF.right, env);
         if (VarTypeCmp(left_type, right_type))
             return;
-        std::cerr << "[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）" << std ::endl;
-        exit(0);
+        exception("[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）");
     }
     case T_SEQ:
         checkcmd_strict(c->d.SEQ.left, env);

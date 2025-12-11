@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 #include "lang.h"
 #include "checker.h"
 
@@ -36,8 +35,7 @@ VarType lookup_vartype(VarTypeEnv *env, char *name)
         }
         else // 找到全局作用域还没有获取到类型，则不存在
         {
-            std ::cerr << "[Error]: 使用了未声明的变量" << std::endl;
-            exit(0);
+            exception("[Error]: 使用了未声明的变量");
         }
     }
     return VarType{}; // 永远不会到达这里
@@ -59,8 +57,7 @@ VarType check_binop_implicit(struct Expr *e, struct VarTypeEnv *env)
     case T_MOD:
         if (left_type.tag == T_PTR || right_type.tag == T_PTR)
         {
-            std ::cerr << "[Error]: 指针类型不能参与加减乘除模（未定义数组相关）" << std::endl;
-            exit(0);
+            exception("[Error]: 指针类型不能参与加减乘除模（未定义数组相关）");
         }
         else // 改过后默认的T_BASIC枚举类型的顺序即满足优先级
         {
@@ -83,8 +80,7 @@ VarType check_binop_implicit(struct Expr *e, struct VarTypeEnv *env)
     case T_OR:
         if (left_type.tag == T_PTR || right_type.tag == T_PTR)
         {
-            std ::cerr << "[Error]: 指针类型不参与布尔类运算" << std::endl;
-            exit(0);
+            exception("[Error]: 指针类型不参与布尔类运算");
         }
         else // 都要默认转为int / 'bool'类 / 并且不用提醒，语义上是非零为真
         {
@@ -102,8 +98,7 @@ VarType check_binop_implicit(struct Expr *e, struct VarTypeEnv *env)
     case T_NE:
         if (left_type.tag == T_PTR || right_type.tag == T_PTR)
         {
-            std ::cerr << "[Error]: 指针类型不参与比较运算" << std::endl;
-            exit(0);
+            exception("[Error]: 指针类型不参与比较运算");
         }
         else // 改过后默认的T_BASIC枚举类型的顺序即满足优先级
         {
@@ -124,8 +119,7 @@ VarType check_unop_implicit(struct Expr *e, struct VarTypeEnv *env)
     VarType expr_type = checkexpr_implicit(e->d.UNOP.right, env);
     if (expr_type.tag == T_PTR)
     {
-        std::cerr << "[Error]: 指针类型不支持一元运算符" << std::endl;
-        exit(0);
+        exception("[Error]: 指针类型不支持一元运算符");
     }
     else
     {
@@ -165,8 +159,7 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
         case T_PTR:
             return *t.tptr; // 交出指针包裹的类型
         case T_BASIC:
-            std::cerr << "[Error]: 不能解引用非指针类型" << std::endl;
-            exit(0);
+            exception("[Error]: 不能解引用非指针类型");
         }
     }
     case T_ADDROF:
@@ -178,8 +171,7 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
         case T_DEREF:
             return new_VarType_PTR(t); // 有且仅有以上两种左值表达式？
         default:
-            std::cerr << "[Error]: 取地址需要左值表达式" << std::endl;
-            exit(0);
+            exception("[Error]: 取地址需要左值表达式");
         }
     }
     case T_TYPECONV:
@@ -204,8 +196,7 @@ void checkcmd_implicit(struct Cmd *c, struct VarTypeEnv *env)
         {
             if (left_type.tag == T_PTR || right_type.tag == T_PTR) // 类型不同且存在指针
             {
-                std::cerr << "[Error]: 不支持指针类型的隐式转换" << std ::endl;
-                exit(0);
+                exception("[Error]: 不支持指针类型的隐式转换");
             }
             else
             {                                             // 赋值语句始终需要右侧表达式转换到左侧
@@ -233,8 +224,7 @@ void checkcmd_implicit(struct Cmd *c, struct VarTypeEnv *env)
         {
             if (left_type.tag == T_PTR || right_type.tag == T_PTR) // 类型不同且存在指针
             {
-                std::cerr << "[Error]: 不支持指针类型的隐式转换" << std ::endl;
-                exit(0);
+                exception("[Error]: 不支持指针类型的隐式转换");
             }
             else
             {                                             // 赋值语句始终需要右侧表达式转换到左侧
