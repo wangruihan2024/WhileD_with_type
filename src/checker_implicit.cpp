@@ -84,10 +84,10 @@ VarType check_binop_implicit(struct Expr *e, struct VarTypeEnv *env)
         }
         else // 都要默认转为int / 'bool'类 / 并且不用提醒，语义上是非零为真
         {
-            if (left_type.tbasic != T_INT)
-                e->d.BINOP.left = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.BINOP.left); // 左侧隐式转换
-            if (right_type.tbasic != T_INT)
-                e->d.BINOP.right = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.BINOP.right); // 左侧隐式转换
+            // if (left_type.tbasic != T_INT)
+            //     e->d.BINOP.left = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.BINOP.left); // 左侧隐式转换
+            // if (right_type.tbasic != T_INT)
+            //     e->d.BINOP.right = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.BINOP.right); // 左侧隐式转换
             return new_VarType_BASIC(T_INT);
         }
     case T_LT:
@@ -128,8 +128,8 @@ VarType check_unop_implicit(struct Expr *e, struct VarTypeEnv *env)
         case T_NEG:
             return expr_type;
         case T_NOT:
-            if (expr_type.tbasic != T_INT)
-                e->d.UNOP.right = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.UNOP.right); // 隐式转换为INT
+            // if (expr_type.tbasic != T_INT)
+                // e->d.UNOP.right = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.UNOP.right); // 隐式转换为INT
             return new_VarType_BASIC(T_INT); // 最后返回INT / bool 类型
         }
     }
@@ -175,7 +175,21 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
         }
     }
     case T_TYPECONV:
-        return e->d.TYPECONV.t; // MARK: 无论如何直接转换，都是基础数据类型没什么讲究
+        VarType src_t = checkexpr_strict(e->d.TYPECONV.right, env);
+        VarType dest_t = e->d.TYPECONV.t;
+        
+        if (src_t.tag == T_BASIC && dest_t.tag == T_BASIC)
+        {
+            return dest_t; // 基本类型之间直接转换
+        }
+        else if (src_t.tag == T_PTR && dest_t.tag == T_PTR)
+        {
+            return dest_t; // 指针之间直接转换
+        }
+        else
+        {
+            exception("[Error]: 不支持的类型转换（无隐式转换）");
+        }
     }
     return VarType{}; // 永远不会到达这里
 }

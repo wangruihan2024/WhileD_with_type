@@ -64,7 +64,8 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
             switch (left.tag)
             {
             case T_BASIC:
-                exception("[Error]: 整数类型不能与，非（没有隐式转换的版本）");
+                // exception("[Error]: 整数类型不能与，非（没有隐式转换的版本）");
+                return new_VarType_BASIC(T_INT);
             case T_PTR:
                 exception("[Error]: 指针类型不能相与，非");
             }
@@ -104,12 +105,7 @@ VarType check_unop_strict(struct Expr *e, struct VarTypeEnv *env)
         case T_NEG:
             return expr_type;
         case T_NOT:
-            if (expr_type.tbasic == T_INT)
-                return expr_type;
-            else
-            {
-                exception("[Error]: 不是INT套壳的Bool不能取反（无隐式类型转化）");
-            }
+            return new_VarType_BASIC(T_INT);
         }
     }
     return VarType{}; // 永远不会到达这里
@@ -157,7 +153,21 @@ VarType checkexpr_strict(struct Expr *e, struct VarTypeEnv *env)
         }
     }
     case T_TYPECONV:
-        return e->d.TYPECONV.t; // MARK: 无论如何直接转换
+        VarType src_t = checkexpr_strict(e->d.TYPECONV.right, env);
+        VarType dest_t = e->d.TYPECONV.t;
+        
+        if (src_t.tag == T_BASIC && dest_t.tag == T_BASIC)
+        {
+            return dest_t; // 基本类型之间直接转换
+        }
+        else if (src_t.tag == T_PTR && dest_t.tag == T_PTR)
+        {
+            return dest_t; // 指针之间直接转换
+        }
+        else
+        {
+            exception("[Error]: 不支持的类型转换（无隐式转换）");
+        }
     }
     return VarType{}; // 永远不会到达这里
 }
