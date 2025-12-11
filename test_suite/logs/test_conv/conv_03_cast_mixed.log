@@ -1,0 +1,6 @@
+初始的AST解析结果：
+SEQ(VARDECLARE(a),SEQ(VARDECLARE(p),SEQ(ASGN(a,CONST(100)),SEQ(ASGN(p,TYPECONV(LONG*,VAR(a))),ASGN(a,TYPECONV(INT,VAR(p)))))))
+
+严格类型检查失败：[Error]: 不支持的类型转换（无隐式转换）
+
+隐式转换显式化失败：[Error]: 不支持的类型转换

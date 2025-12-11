@@ -1,1 +1,7 @@
+初始的AST解析结果：
 SEQ(VARDECLARE(x),SEQ(VARDECLARE(y),SEQ(ASGNDREF(VAR(x),CONST(5)),ASGNDREF(ADD(VAR(x),CONST(1)),DEREF(VAR(y))))))
+
+严格类型检查失败：[Error]：不能解引用非指针类型
+
+隐式转换显式化失败：[Error]: 不能解引用非指针类型
+

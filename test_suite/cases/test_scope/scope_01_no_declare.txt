@@ -1,0 +1,4 @@
+int x;
+while (1 > 0) do {
+    y = 1
+}
