@@ -1,0 +1,6 @@
+初始的AST解析结果：
+SEQ(VARDECLARE(p),SEQ(VARDECLARE(q),SEQ(VARDECLARE(r),SEQ(VARDECLARE(res),ASGN(res,AND(AND(EQ(VAR(p),ADDROF(ADDROF(VAR(r)))),NE(ADDROF(VAR(p)),ADDROF(ADDROF(VAR(q))))),NE(VAR(q),ADDROF(VAR(r)))))))))
+
+严格类型检查失败：[Error]: 取地址需要左值表达式
+
+隐式转换显式化失败：[Error]: 取地址需要左值表达式
