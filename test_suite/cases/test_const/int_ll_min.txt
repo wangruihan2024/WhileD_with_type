@@ -1,0 +1,5 @@
+int x;
+x = -2147483648;
+long long z; z = -9223372036854775808;
+int y;
+if (z < y) then {z = y} else {y = z}

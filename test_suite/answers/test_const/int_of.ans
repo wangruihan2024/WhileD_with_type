@@ -1,0 +1,9 @@
+初始的AST解析结果：
+SEQ(VARDECLARE(x),ASGN(x,CONST(2147483648)))
+
+严格类型检查失败：[Error]: 赋值语句左右类型不匹配（隐式类型转换未支持）
+
+[Warning]: 赋值语句存在类型 [LONGLONG] 向类型 [INT] 的隐式转换反优先级，可能损失数据信息
+类型检查成功
+隐式转换显式化后的AST树：
+SEQ(VARDECLARE(x),ASGN(x,TYPECONV(INT,CONST(2147483648))))

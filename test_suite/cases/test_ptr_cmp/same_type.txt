@@ -1,0 +1,3 @@
+int *p; int *q;
+while (p == q || p != q) do {SKIP};
+if (*p == *q && *p != *q) then {*p = *q} else {*q = *p}

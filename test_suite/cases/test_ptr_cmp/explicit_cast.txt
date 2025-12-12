@@ -1,0 +1,6 @@
+int *p; int *p0; int **p1;
+p = (int*) p1;
+long ***q;
+p1 = (int**) q;
+if (p == (int*) p1) then {SKIP} else {SKIP};
+if (q != (long***) p1) then {SKIP} else {SKIP}

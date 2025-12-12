@@ -1,0 +1,6 @@
+初始的AST解析结果：
+SEQ(VARDECLARE(p),SEQ(VARDECLARE(q),SEQ(VARDECLARE(r),SEQ(VARDECLARE(res),ASGN(res,AND(EQ(VAR(p),ADDROF(VAR(q))),EQ(VAR(q),ADDROF(VAR(r)))))))))
+
+严格类型检查失败：[Error]: 操作数类型不一致（没有隐式转换的版本）
+
+隐式转换显式化失败：[Error]: 指针类型不参与有序比较运算，不同类型指针不参与比较运算

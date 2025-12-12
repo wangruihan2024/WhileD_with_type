@@ -1,0 +1,2 @@
+int *p; int **q; int *** r; int res;
+res = p == &q && q == &r

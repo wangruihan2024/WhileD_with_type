@@ -1,0 +1,2 @@
+int *p; int **q; int res;
+res = p == q || p != q
