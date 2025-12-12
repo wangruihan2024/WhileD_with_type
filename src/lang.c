@@ -53,6 +53,11 @@ struct Expr *TConst(unsigned long long value)
   struct Expr *res = new_Expr_ptr();
   res->t = T_CONST;
   res->d.CONST.value = value;
+  if (value > 9223372036854775807ULL) {
+        res->d.CONST.is_overflow = 1; // 标记为溢出
+  } else {
+      res->d.CONST.is_overflow = 0;
+  }
   return res;
 }
 
@@ -279,7 +284,7 @@ void print_expr(struct Expr *e)
   switch (e->t)
   {
   case T_CONST:
-    printf("CONST(%llu)", e->d.CONST.value);
+    printf("CONST(%lld)", e->d.CONST.value);
     break;
   case T_VAR:
     printf("VAR(%s)", e->d.VAR.name);

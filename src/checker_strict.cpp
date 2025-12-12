@@ -113,7 +113,10 @@ VarType checkexpr_strict(struct Expr *e, struct VarTypeEnv *env)
     case T_CONST:
         // 默认落在INT范围内，唯一涉及语义的地方🤔
         // 后续可能还得改一改风格，这种超长链条的内存访问ww
-        if (e->d.CONST.value <= INT32_MAX)
+        if (e->d.CONST.is_overflow)
+            exception("[Error]: 整数常量溢出 long long 范围");
+
+        if (e->d.CONST.value >= -2147483648LL && e->d.CONST.value <= 2147483647LL)
             return new_VarType_BASIC(T_INT);
         else
             return new_VarType_BASIC(T_LONGLONG);

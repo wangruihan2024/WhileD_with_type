@@ -135,7 +135,10 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
     switch (e->t)
     {
     case T_CONST:
-        if (e->d.CONST.value <= INT32_MAX)
+        if (e->d.CONST.is_overflow)
+            exception("[Error]: 整数常量溢出 long long 范围");
+
+        if (e->d.CONST.value >= -2147483648LL && e->d.CONST.value <= 2147483647LL)
             return new_VarType_BASIC(T_INT);
         else
             return new_VarType_BASIC(T_LONGLONG);
@@ -169,7 +172,7 @@ VarType checkexpr_implicit(struct Expr *e, struct VarTypeEnv *env)
         }
     }
     case T_TYPECONV:
-        VarType src_t = checkexpr_strict(e->d.TYPECONV.right, env);
+        VarType src_t = checkexpr_implicit(e->d.TYPECONV.right, env);
         VarType dest_t = e->d.TYPECONV.t;
         
         if (src_t.tag == T_BASIC && dest_t.tag == T_BASIC)

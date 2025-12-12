@@ -87,7 +87,8 @@ extern "C"
     {
       struct
       {
-        unsigned long long value;
+        long long value;
+        int is_overflow;
       } CONST;
       struct
       {

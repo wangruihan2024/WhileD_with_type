@@ -133,7 +133,24 @@ NT_EXPR:
   }
 | TM_MINUS NT_EXPR %prec UMINUS
   {
-    $$ = TUnOP(T_NEG, $2);
+    if ($2->t == T_CONST) {
+      if ($2->d.CONST.is_overflow) {
+        unsigned long long u_val = (unsigned long long)$2->d.CONST.value;
+        
+        if (u_val == 9223372036854775808ULL) {
+          $$ = $2;
+          $$->d.CONST.is_overflow = 0;
+          $$->d.CONST.value = (-9223372036854775807LL - 1);
+        } else {
+          $$ = $2;
+        }
+      } else {
+        $$ = $2;
+        $$->d.CONST.value = -($$->d.CONST.value);
+      }
+    } else {
+      $$ = TUnOP(T_NEG, $2);
+    }
   }
 | TM_MUL NT_EXPR
   {
