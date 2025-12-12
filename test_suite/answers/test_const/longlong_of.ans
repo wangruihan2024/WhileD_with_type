@@ -1,0 +1,6 @@
+初始的AST解析结果：
+SEQ(VARDECLARE(y),ASGN(y,CONST(-9223372036854775808)))
+
+严格类型检查失败：[Error]: 整数常量溢出 long long 范围
+
+隐式转换显式化失败：[Error]: 整数常量溢出 long long 范围
