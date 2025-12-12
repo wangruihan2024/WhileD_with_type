@@ -78,10 +78,6 @@ VarType check_binop_implicit(struct Expr *e, struct VarTypeEnv *env)
         }
         else // 都要默认转为int / 'bool'类 / 并且不用提醒，语义上是非零为真
         {
-            // if (left_type.tbasic != T_INT)
-            //     e->d.BINOP.left = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.BINOP.left); // 左侧隐式转换
-            // if (right_type.tbasic != T_INT)
-            //     e->d.BINOP.right = implicit_typeconv(new_VarType_BASIC(T_INT), e->d.BINOP.right); // 左侧隐式转换
             return new_VarType_BASIC(T_INT);
         }
     case T_LT:
@@ -92,7 +88,10 @@ VarType check_binop_implicit(struct Expr *e, struct VarTypeEnv *env)
     case T_NE:
         if (left_type.tag == T_PTR || right_type.tag == T_PTR)
         {
-            exception("[Error]: 指针类型不参与比较运算");
+            if ((op == T_EQ || op == T_NE) && left_type.tag == T_PTR && right_type.tag == T_PTR && VarTypeCmp(left_type, right_type ))
+                return new_VarType_BASIC(T_INT);  // 只有相同类型的指针可以进行相等比较，不支持隐式转换
+
+            exception("[Error]: 指针类型不参与有序比较运算，不同类型指针不参与比较运算");
         }
         else // 改过后默认的T_BASIC枚举类型的顺序即满足优先级
         {

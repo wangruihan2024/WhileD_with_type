@@ -58,7 +58,6 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
             switch (left.tag)
             {
             case T_BASIC:
-                // exception("[Error]: 整数类型不能与，非（没有隐式转换的版本）");
                 return new_VarType_BASIC(T_INT);
             case T_PTR:
                 exception("[Error]: 指针类型不能相与，非");
@@ -78,6 +77,9 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
             case T_BASIC:
                 return new_VarType_BASIC(T_INT);
             case T_PTR:
+                if (e->d.BINOP.op == T_EQ || e->d.BINOP.op == T_NE)
+                    return new_VarType_BASIC(T_INT);  // 允许指针相等/不等比较
+
                 exception("[Error]: 指针类型不能比较");
             }
         }
@@ -85,6 +87,7 @@ VarType check_binop_strict(struct Expr *e, struct VarTypeEnv *env)
     }
     return VarType{}; // 永远不会到达这里
 }
+
 VarType check_unop_strict(struct Expr *e, struct VarTypeEnv *env)
 {
     VarType expr_type = checkexpr_strict(e->d.UNOP.right, env);
