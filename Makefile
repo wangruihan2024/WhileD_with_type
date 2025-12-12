@@ -37,8 +37,8 @@ LANG_O    = $(BUILD_DIR)/lang.o
 PARSER_O  = $(BUILD_DIR)/parser.o
 LEXER_O   = $(BUILD_DIR)/lexer.o
 MAIN_O    = $(BUILD_DIR)/main.o
-CHECKER_O = $(BUILD_DIR)/checker.o
-CHECKER_CONV_O = $(BUILD_DIR)/checker_conv.o
+CHECKER_STRICT_O = $(BUILD_DIR)/checker_strict.o
+CHECKER_IMPLICIT_O = $(BUILD_DIR)/checker_IMPLICIT.o
 
 # 禁用所有隐式规则和隐式变量
 MAKEFLAGS += --no-builtin-rules
@@ -114,17 +114,17 @@ $(LEXER_O): $(LEXER_C) $(LEXER_H) $(PARSER_H) $(LANG_H)
 $(MAIN_O): $(MAIN_CPP) $(LEXER_H) $(PARSER_H) $(LANG_H) $(CHECKER_H)
 	$(CXX) $(CXXFLAGS) -c $(MAIN_CPP) -o $(MAIN_O)
 
-$(CHECKER_O): $(CHECKER_STRICT_CPP) $(CHECKER_H) $(LANG_H)
-	$(CXX) $(CXXFLAGS) -c $(CHECKER_STRICT_CPP) -o $(CHECKER_O)
+$(CHECKER_STRICT_O): $(CHECKER_STRICT_CPP) $(CHECKER_H) $(LANG_H)
+	$(CXX) $(CXXFLAGS) -c $(CHECKER_STRICT_CPP) -o $(CHECKER_STRICT_O)
 
-$(CHECKER_CONV_O): $(CHECKER_IMPLICIT_CPP) $(CHECKER_H) $(LANG_H)
-	$(CXX) $(CXXFLAGS) -c $(CHECKER_IMPLICIT_CPP) -o $(CHECKER_CONV_O)
+$(CHECKER_IMPLICIT_O): $(CHECKER_IMPLICIT_CPP) $(CHECKER_H) $(LANG_H)
+	$(CXX) $(CXXFLAGS) -c $(CHECKER_IMPLICIT_CPP) -o $(CHECKER_IMPLICIT_O)
 
 # ==========================================
 # 链接（必须用 g++）
 # ==========================================
-$(TARGET): $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_O) $(CHECKER_CONV_O) $(MAIN_O) | $(BIN_DIR)
-	$(LD) $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_O) $(CHECKER_CONV_O) $(MAIN_O) -o $(TARGET)
+$(TARGET): $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_STRICT_O) $(CHECKER_IMPLICIT_O) $(MAIN_O) | $(BIN_DIR)
+	$(LD) $(LANG_O) $(PARSER_O) $(LEXER_O) $(CHECKER_STRICT_O) $(CHECKER_IMPLICIT_O) $(MAIN_O) -o $(TARGET)
 
 # ==========================================
 # 清理
