@@ -1,32 +1,34 @@
-# WhileD with Type
+# 带类型 WhileD 语言 (WhileD with Type)
 
-This repository contains an implementation of the WhileD programming language with a simple type system.
+本仓库实现了带有简单类型系统的 WhileD 编程语言 (WhileDT)。
 
-## Overview
+## 概览
 
-This project implements a compiler frontend for the WhileDT language, including lexical analysis, parsing, AST generation and type checker.
+本项目实现了 WhileDT 语言的编译器前端，包括词法分析、语法分析、AST（抽象语法树）生成和简单类型检查器。
 
-### Project Structure
+### 项目结构
 
-*   **`WhileDT Syntax Definition.md`**: Detailed definition of the WhileDT syntax and AST format.
+*   **`WhileDT 语法定义.md`**: WhileDT 语法和 AST 格式的详细定义
 
-*   **`WhileDT.v`**: Definition of WhileDT language in coq.
+*   **`类型检查规则.pdf`**: WhileDT 语言类型系统的设计和转换规则说明
 
-*   **`src/`**: Source code for the compiler.
-    *   `lang.l`: Flex lexer definition.
-    *   `lang.y`: Bison parser definition.
-    *   `lang.c/h`: AST data structures and printing logic.
-    *   `main.c`: Entry point.
-    *   `checker.cpp`: Type checking implementation. (TBD)
+*   **`WhileDT.v`**: WhileDT 语言在 Coq 中的定义
 
-*   **`test_suite/`**: Automated testing framework.
-    *   `cases/`: Input source code files.
-    *   `answers/`: Expected AST outputs.
-    *   `scripts/`: Scripts to generate and run tests.
-    *   **`Testing Guide.md`**: Instructions on how to run the test suite.
+*   **`src/`**: 编译器前端的源代码
+    *   `lang.l`: Flex 词法分析器定义
+    *   `lang.y`: Bison 语法分析器定义
+    *   `lang.c/h`: AST 数据结构和打印逻辑
+    *   `main.c`: 程序入口
+    *   `checker.cpp`: 类型检查实现
 
-*   **`Makefile`**: Build instructions.
+*   **`test_suite/`**: 自动化测试框架
+    *   `cases/`: 输入源代码文件
+    *   `answers/`: 预期的 AST 输出
+    *   `scripts/`: 生成和运行测试的脚本
+    *   **`Testing Guide.md`**: 测试框架使用说明
 
-*   **`bin/`**: Contains the final executable (main).
+*   **`Makefile`**
 
-*   **`build/`**: Intermediate files generated during compilation. Crucially, this contains the generated C source files (`parser.c`, `lexer.c`) derived from Bison and Flex definitions.
+*   **`bin/`**: 包含最终的可执行文件 (main)
+
+*   **`build/`**: 编译过程中生成的中间文件。关键是，这里包含从 Bison 和 Flex 定义派生的 C 源代码文件（`parser.c`, `lexer.c`）

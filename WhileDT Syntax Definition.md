@@ -67,7 +67,7 @@ Example: `while (x > 0) do { x = x - 1 }`
 
 ## Abstract Syntax Tree (AST) Format
 
-The interpreter outputs the AST in the following format:
+Output the AST in the following format:
 
 ### Expressions
 - `CONST(n)`
